@@ -3,322 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beatriz Campos Inmobiliaria</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Acceso — Beatriz Campos Inmobiliaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #FF1493 0%, #C020A0 25%, #8B2FC9 55%, #4A1080 80%, #1C1B33 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;}
+        body{
+            font-family:'Poppins',sans-serif;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            min-height:100vh;
         }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.25;
-            animation: drift 8s ease-in-out infinite;
+        /* ===== LADO IZQUIERDO — branding ===== */
+        .left{
+            background:linear-gradient(155deg,#1a1a2e 0%,#2d1b69 40%,#5533CC 75%,#EE00BB 100%);
+            display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            padding:48px 52px;
+            position:relative;overflow:hidden;
         }
-        .orb-1 { width: 500px; height: 500px; background: #FF1493; top: -150px; right: -150px; animation-delay: 0s; }
-        .orb-2 { width: 400px; height: 400px; background: #7B2DD4; bottom: -120px; left: -120px; animation-delay: 3s; }
-        .orb-3 { width: 300px; height: 300px; background: #FF69B4; top: 40%; left: 5%; animation-delay: 1.5s; }
-        .orb-4 { width: 250px; height: 250px; background: #9B59B6; top: 20%; right: 15%; animation-delay: 4s; }
+        /* destellos decorativos */
+        .left::before{
+            content:'';position:absolute;top:-120px;right:-120px;
+            width:380px;height:380px;border-radius:50%;
+            background:radial-gradient(circle,rgba(238,0,187,.25) 0%,transparent 70%);
+        }
+        .left::after{
+            content:'';position:absolute;bottom:-100px;left:-80px;
+            width:320px;height:320px;border-radius:50%;
+            background:radial-gradient(circle,rgba(85,51,204,.3) 0%,transparent 70%);
+        }
+        .left-content{position:relative;z-index:1;text-align:center;}
 
-        @keyframes drift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(15px, -20px) scale(1.05); }
+        /* logo */
+        .brand-logo-wrap{
+            width:140px;height:140px;border-radius:32px;
+            background:rgba(255,255,255,0.12);
+            backdrop-filter:blur(12px);
+            border:2px solid rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 28px;
+            box-shadow:0 20px 60px rgba(0,0,0,.3);
+            overflow:hidden;
         }
+        .brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:12px;}
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.12);
-            animation: float 7s ease-in-out infinite;
+        .brand-name{
+            font-size:26px;font-weight:900;color:#fff;
+            line-height:1.15;margin-bottom:6px;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
-            50% { transform: translateY(-30px) rotate(180deg); opacity: 1; }
+        .brand-name em{
+            font-style:normal;
+            background:linear-gradient(90deg,#ffaaee,#fff);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
         }
-
-        .card {
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 32px;
-            padding: 52px 48px;
-            width: 500px;
-            max-width: 92vw;
-            box-shadow:
-                0 40px 100px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            position: relative;
-            z-index: 10;
-            animation: cardEntrance 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes cardEntrance {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to   { opacity: 1; transform: translateY(0)   scale(1);    }
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 32px; right: 32px;
-            height: 4px;
-            background: linear-gradient(90deg, #FF1493, #7B2DD4, #FF1493);
-            border-radius: 0 0 4px 4px;
+        .brand-sub{
+            font-size:11px;font-weight:600;letter-spacing:3px;
+            text-transform:uppercase;color:rgba(255,255,255,.55);
+            margin-bottom:40px;
         }
 
-        .logo-wrapper {
-            background: linear-gradient(135deg, #FF1493 0%, #C020A0 50%, #7B2DD4 100%);
-            border-radius: 24px;
-            padding: 22px 24px;
-            margin: 0 auto 28px;
-            width: 210px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 16px 40px rgba(255, 20, 147, 0.45), 0 4px 12px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
+        /* stats pequeños */
+        .brand-stats{
+            display:flex;gap:28px;justify-content:center;
+            border-top:1px solid rgba(255,255,255,.12);
+            padding-top:32px;margin-top:8px;
         }
-        .logo-wrapper::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 50%;
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 24px 24px 0 0;
+        .bs-item{text-align:center;}
+        .bs-num{font-size:24px;font-weight:900;color:#EE00BB;line-height:1;}
+        .bs-lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:400;}
+
+        /* chips decorativos */
+        .brand-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px;}
+        .chip{
+            display:flex;align-items:center;gap:6px;
+            background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+            border-radius:50px;padding:6px 14px;
+            color:rgba(255,255,255,.8);font-size:11px;font-weight:500;
         }
-        .logo-wrapper img {
-            width: 100%;
-            border-radius: 14px;
-            position: relative;
-            z-index: 1;
+        .chip i{font-size:11px;color:#EE00BB;}
+
+        /* volver */
+        .back-link{
+            display:inline-flex;align-items:center;gap:7px;
+            color:rgba(255,255,255,.45);font-size:12px;font-weight:500;
+            text-decoration:none;transition:.2s;margin-top:32px;
+            position:relative;z-index:1;
+        }
+        .back-link:hover{color:rgba(255,255,255,.85);}
+
+        /* ===== LADO DERECHO — acceso ===== */
+        .right{
+            background:#fff;
+            display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            padding:48px 56px;
+            position:relative;
+        }
+        .right::before{
+            content:'';position:absolute;top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,#EE00BB,#5533CC,#EE00BB);
+        }
+        .right-inner{width:100%;max-width:380px;}
+
+        .right-tag{
+            display:inline-flex;align-items:center;gap:7px;
+            background:linear-gradient(135deg,rgba(238,0,187,.08),rgba(85,51,204,.08));
+            color:#5533CC;border-radius:50px;padding:5px 16px;
+            font-size:11px;font-weight:700;letter-spacing:1.5px;
+            text-transform:uppercase;margin-bottom:16px;
+        }
+        .right-h1{
+            font-size:30px;font-weight:800;color:#1a1a2e;
+            line-height:1.2;margin-bottom:8px;
+        }
+        .right-h1 span{color:#EE00BB;}
+        .right-sub{font-size:13.5px;color:#64748b;line-height:1.7;margin-bottom:36px;}
+
+        /* cards de acceso */
+        .access-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:28px;}
+
+        .access-card{
+            display:flex;align-items:center;gap:18px;
+            padding:20px 22px;border-radius:18px;
+            text-decoration:none;border:2px solid transparent;
+            transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+            position:relative;overflow:hidden;
+        }
+        .access-card::after{
+            content:'';position:absolute;inset:0;
+            background:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,0));
+            opacity:0;transition:.3s;
+        }
+        .access-card:hover{transform:translateY(-4px);}
+        .access-card:hover::after{opacity:1;}
+        .access-card:active{transform:translateY(-1px);}
+
+        .ac-cliente{
+            background:linear-gradient(135deg,#EE00BB,#C4009A);
+            box-shadow:0 10px 32px rgba(238,0,187,.35);
+        }
+        .ac-cliente:hover{box-shadow:0 18px 48px rgba(238,0,187,.5);}
+
+        .ac-admin{
+            background:linear-gradient(135deg,#5533CC,#3D1F99);
+            box-shadow:0 10px 32px rgba(85,51,204,.35);
+        }
+        .ac-admin:hover{box-shadow:0 18px 48px rgba(85,51,204,.5);}
+
+        .ac-icon{
+            width:52px;height:52px;border-radius:14px;flex-shrink:0;
+            background:rgba(255,255,255,.18);
+            display:flex;align-items:center;justify-content:center;
+            font-size:22px;color:#fff;
+            box-shadow:0 4px 12px rgba(0,0,0,.15);
+        }
+        .ac-text{flex:1;}
+        .ac-text .ac-title{display:block;font-size:16px;font-weight:700;color:#fff;margin-bottom:3px;}
+        .ac-text .ac-desc{display:block;font-size:11.5px;color:rgba(255,255,255,.7);font-weight:400;}
+        .ac-arrow{
+            width:34px;height:34px;border-radius:50%;
+            background:rgba(255,255,255,.15);
+            display:flex;align-items:center;justify-content:center;
+            color:rgba(255,255,255,.8);font-size:13px;
+            transition:all .3s;flex-shrink:0;
+        }
+        .access-card:hover .ac-arrow{background:rgba(255,255,255,.25);transform:translateX(3px);color:#fff;}
+
+        /* divider */
+        .or-divider{
+            display:flex;align-items:center;gap:12px;
+            margin-bottom:20px;
+        }
+        .or-line{flex:1;height:1px;background:#f1f5f9;}
+        .or-text{font-size:11px;color:#cbd5e1;font-weight:500;white-space:nowrap;}
+
+        /* WA button */
+        .wa-btn{
+            display:flex;align-items:center;justify-content:center;gap:10px;
+            width:100%;padding:14px;border-radius:14px;
+            background:#f0fdf4;border:1.5px solid #bbf7d0;
+            color:#16a34a;font-size:14px;font-weight:600;
+            text-decoration:none;transition:.3s;
+        }
+        .wa-btn:hover{background:#dcfce7;border-color:#86efac;transform:translateY(-2px);}
+        .wa-btn i{font-size:18px;}
+
+        /* footer derecha */
+        .right-footer{
+            text-align:center;margin-top:28px;
+            padding-top:20px;border-top:1px solid #f1f5f9;
+        }
+        .right-footer p{font-size:11px;color:#cbd5e1;}
+        .right-footer strong{color:#EE00BB;}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){
+            body{grid-template-columns:1fr;}
+            .left{
+                padding:36px 28px;
+                min-height:auto;
+            }
+            .left::before,.left::after{display:none;}
+            .brand-logo-wrap{width:100px;height:100px;border-radius:24px;margin-bottom:16px;}
+            .brand-name{font-size:20px;}
+            .brand-stats,.brand-chips{display:none;}
+            .brand-sub{margin-bottom:0;}
+            .back-link{margin-top:16px;}
+            .right{padding:36px 24px 40px;}
+            .right::before{height:3px;}
         }
 
-        .company-name {
-            text-align: center;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #1C1B33;
-            margin-bottom: 4px;
-        }
-        .company-name .highlight { color: #FF1493; }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 18px 0 26px;
-        }
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, #e8e8e8);
-        }
-        .divider-line.right {
-            background: linear-gradient(to left, transparent, #e8e8e8);
-        }
-        .divider-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #FF1493, #7B2DD4);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-        }
-
-        .welcome-title {
-            text-align: center;
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #7B2DD4, #C020A0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .welcome-subtitle {
-            text-align: center;
-            color: #9CA3AF;
-            font-size: 13.5px;
-            font-weight: 400;
-            margin-bottom: 34px;
-            line-height: 1.6;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            width: 100%;
-            padding: 18px 22px;
-            border: none;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .btn:hover::before { opacity: 1; }
-        .btn:hover { transform: translateY(-4px); }
-        .btn:active { transform: translateY(-1px); transition-duration: 0.1s; }
-
-        .btn-icon-wrap {
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-            color: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .btn-content { flex: 1; text-align: left; }
-        .btn-content .label { display: block; color: white; font-weight: 600; font-size: 15px; }
-        .btn-content .desc { display: block; color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 400; margin-top: 2px; }
-
-        .btn-arrow { color: rgba(255,255,255,0.6); font-size: 13px; transition: transform 0.3s; }
-        .btn:hover .btn-arrow { transform: translateX(4px); color: rgba(255,255,255,0.9); }
-
-        .btn-cliente {
-            background: linear-gradient(135deg, #FF1493 0%, #E0006A 100%);
-            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-cliente:hover {
-            box-shadow: 0 18px 45px rgba(255, 20, 147, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-
-        .btn-admin {
-            background: linear-gradient(135deg, #7B2DD4 0%, #5B1DB4 100%);
-            box-shadow: 0 10px 30px rgba(123, 45, 212, 0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-admin:hover {
-            box-shadow: 0 18px 45px rgba(123, 45, 212, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-
-        .card-footer {
-            text-align: center;
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid #F3F4F6;
-        }
-        .card-footer p { color: #C4C4C4; font-size: 11.5px; }
-        .card-footer strong { color: #FF1493; font-weight: 600; }
-        .card-footer .version {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(255,20,147,0.08), rgba(123,45,212,0.08));
-            color: #7B2DD4;
-            border-radius: 20px;
-            padding: 3px 10px;
-            font-size: 10px;
-            font-weight: 600;
-            margin-top: 6px;
-            letter-spacing: 1px;
+        @media(max-width:480px){
+            .right{padding:28px 20px 36px;}
+            .right-h1{font-size:24px;}
+            .access-card{padding:16px 18px;gap:14px;}
+            .ac-icon{width:44px;height:44px;font-size:18px;}
+            .ac-text .ac-title{font-size:14px;}
+            .right-inner{max-width:100%;}
         }
     </style>
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="orb orb-4"></div>
+    <!-- IZQUIERDA: branding -->
+    <div class="left">
+        <div class="left-content">
+            <div class="brand-logo-wrap">
+                <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Beatriz Campos Inmobiliaria">
+            </div>
+            <div class="brand-name">
+                <em>Beatriz Campos</em><br>Inmobiliaria
+            </div>
+            <div class="brand-sub">Sistema de Gestión</div>
 
-    <div class="particle" style="width:90px;height:90px;top:8%;left:12%;animation-delay:0s;animation-duration:8s;"></div>
-    <div class="particle" style="width:50px;height:50px;top:75%;left:8%;animation-delay:1.5s;animation-duration:6s;"></div>
-    <div class="particle" style="width:70px;height:70px;top:15%;right:18%;animation-delay:3s;animation-duration:9s;"></div>
-    <div class="particle" style="width:110px;height:110px;bottom:10%;right:8%;animation-delay:0.8s;animation-duration:7s;"></div>
-    <div class="particle" style="width:35px;height:35px;top:55%;left:4%;animation-delay:4s;animation-duration:5s;"></div>
-    <div class="particle" style="width:60px;height:60px;bottom:30%;right:20%;animation-delay:2s;animation-duration:10s;"></div>
+            <div class="brand-chips">
+                <div class="chip"><i class="fas fa-check-circle"></i> Proyectos 100% ejecutados</div>
+                <div class="chip"><i class="fas fa-hand-holding-usd"></i> Financiamiento sin intereses</div>
+                <div class="chip"><i class="fas fa-city"></i> Habilitación Urbana</div>
+                <div class="chip"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
+            </div>
 
-    <div class="card">
-
-        <div class="logo-wrapper">
-            <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Beatriz Campos Inmobiliaria">
-        </div>
-
-        <div class="company-name">
-            <span class="highlight">Beatriz Campos</span> Inmobiliaria
-        </div>
-
-        <div class="divider">
-            <div class="divider-line"></div>
-            <div class="divider-icon"><i class="fas fa-home"></i></div>
-            <div class="divider-line right"></div>
-        </div>
-
-        <h1 class="welcome-title">Bienvenido al Sistema</h1>
-        <p class="welcome-subtitle">
-            Selecciona el tipo de acceso para continuar<br>
-            con la plataforma de gestión inmobiliaria
-        </p>
-
-        <div class="btn-group">
-            <a href="/cliente" class="btn btn-cliente">
-                <div class="btn-icon-wrap">
-                    <i class="fas fa-user-circle"></i>
+            <div class="brand-stats">
+                <div class="bs-item">
+                    <div class="bs-num">3+</div>
+                    <div class="bs-lbl">Proyectos</div>
                 </div>
-                <div class="btn-content">
-                    <span class="label">Acceso Cliente</span>
-                    <span class="desc">Ver propiedades y mis contratos</span>
+                <div class="bs-item">
+                    <div class="bs-num">252+</div>
+                    <div class="bs-lbl">Familias</div>
                 </div>
-                <i class="fas fa-chevron-right btn-arrow"></i>
-            </a>
+                <div class="bs-item">
+                    <div class="bs-num">0%</div>
+                    <div class="bs-lbl">Intereses</div>
+                </div>
+            </div>
 
-            <a href="/admin" class="btn btn-admin">
-                <div class="btn-icon-wrap">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <div class="btn-content">
-                    <span class="label">Acceso Administrativo</span>
-                    <span class="desc">Gestión completa del sistema</span>
-                </div>
-                <i class="fas fa-chevron-right btn-arrow"></i>
+            <a href="{{ url('/') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Volver al sitio web
             </a>
         </div>
+    </div>
 
-        <div class="card-footer">
-            <p>&copy; 2025 <strong>Beatriz Campos Inmobiliaria</strong>. Todos los derechos reservados.</p>
-            <span class="version">SISTEMA v1.0</span>
+    <!-- DERECHA: acceso -->
+    <div class="right">
+        <div class="right-inner">
+
+            <div class="right-tag">
+                <i class="fas fa-lock"></i> Acceso Seguro
+            </div>
+
+            <h1 class="right-h1">
+                Selecciona tu<br><span>tipo de acceso</span>
+            </h1>
+            <p class="right-sub">
+                Elige el portal correspondiente para ingresar a la plataforma de gestión inmobiliaria.
+            </p>
+
+            <div class="access-cards">
+
+                <a href="{{ url('/cliente') }}" class="access-card ac-cliente">
+                    <div class="ac-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="ac-text">
+                        <span class="ac-title">Portal Cliente</span>
+                        <span class="ac-desc">Ver mis propiedades y contratos</span>
+                    </div>
+                    <div class="ac-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="{{ url('/admin') }}" class="access-card ac-admin">
+                    <div class="ac-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="ac-text">
+                        <span class="ac-title">Panel Administrativo</span>
+                        <span class="ac-desc">Gestión completa del sistema</span>
+                    </div>
+                    <div class="ac-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="or-divider">
+                <div class="or-line"></div>
+                <div class="or-text">¿Tienes consultas?</div>
+                <div class="or-line"></div>
+            </div>
+
+            <a href="https://wa.me/51900000000" class="wa-btn" target="_blank">
+                <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
+            </a>
+
+            <div class="right-footer">
+                <p>&copy; 2026 <strong>Beatriz Campos Inmobiliaria</strong>. Todos los derechos reservados.</p>
+            </div>
+
         </div>
     </div>
 

@@ -57,17 +57,33 @@
             white-space:nowrap;
         }
         .nav-wa:hover{background:#1db954;transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.4);}
+        .nav-login{
+            display:flex;align-items:center;gap:8px;
+            background:linear-gradient(135deg,var(--vt),var(--vt2));
+            color:#fff;padding:9px 20px;border-radius:50px;
+            font-size:13px;font-weight:700;text-decoration:none;
+            transition:all .3s;box-shadow:0 4px 16px rgba(85,51,204,.3);
+            white-space:nowrap;
+        }
+        .nav-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(85,51,204,.45);}
         .hamburger{display:none;border:none;background:none;font-size:22px;color:var(--dark);cursor:pointer;}
         .mob-nav{
             display:none;flex-direction:column;gap:4px;
             position:fixed;top:70px;left:0;right:0;
             background:#fff;padding:16px 24px 24px;
             box-shadow:0 20px 40px rgba(0,0,0,.08);z-index:999;
+            max-height:calc(100vh - 70px);overflow-y:auto;
         }
         .mob-nav.open{display:flex;}
-        .mob-nav a{padding:11px 14px;border-radius:10px;font-size:14px;color:var(--dark);text-decoration:none;font-weight:500;transition:.2s;}
-        .mob-nav a:hover{background:var(--light);color:var(--vt);}
+        /* links normales del menú */
+        .mob-nav a:not(.nav-wa):not(.nav-login){
+            padding:11px 14px;border-radius:10px;font-size:14px;
+            color:var(--dark);text-decoration:none;font-weight:500;transition:.2s;
+        }
+        .mob-nav a:not(.nav-wa):not(.nav-login):hover{background:var(--light);color:var(--vt);}
+        /* botones de acción en el menú móvil */
         .mob-nav .nav-wa{margin-top:8px;justify-content:center;}
+        .mob-nav .nav-login{margin-top:4px;justify-content:center;}
 
         /* ============================
            HERO — split layout
@@ -342,10 +358,7 @@
         #pasos .s-h2{color:#fff;}
         #pasos .s-sub{color:rgba(255,255,255,.65);}
         .steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;position:relative;}
-        .steps-row::before{
-            content:'';position:absolute;top:35px;left:calc(12.5% + 20px);right:calc(12.5% + 20px);
-            height:2px;background:rgba(255,255,255,.2);z-index:0;
-        }
+        .steps-row::before{display:none;}
         .step{
             background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
             border-radius:22px;padding:30px 22px;text-align:center;
@@ -613,7 +626,7 @@
             .footer-top{grid-template-columns:1fr 1fr;}
         }
         @media(max-width:768px){
-            .nav-menu,.nav-wa{display:none;}
+            .nav-menu,.nav-wa,.nav-login{display:none;}
             .hamburger{display:block;}
             section{padding:64px 20px;}
             .hero-left{padding:40px 24px;}
@@ -665,6 +678,9 @@
         <a href="https://wa.me/51900000000" class="nav-wa" target="_blank">
             <i class="fab fa-whatsapp"></i> WhatsApp
         </a>
+        <a href="{{ url('/acceso') }}" class="nav-login">
+            <i class="fas fa-sign-in-alt"></i> Ingresar
+        </a>
         <button class="hamburger" id="ham" aria-label="Menú">
             <i class="fas fa-bars" id="hamIcon"></i>
         </button>
@@ -679,6 +695,9 @@
     <a href="#cta" onclick="closeMob()">Contacto</a>
     <a href="https://wa.me/51900000000" class="nav-wa" target="_blank">
         <i class="fab fa-whatsapp"></i> WhatsApp
+    </a>
+    <a href="{{ url('/acceso') }}" class="nav-login" style="margin-top:4px;justify-content:center;">
+        <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
     </a>
 </div>
 
@@ -1134,7 +1153,7 @@
                 <a href="https://wa.me/51900000000?text=Hola!%20Quiero%20informaci%C3%B3n%20sobre%20los%20lotes%20disponibles" class="btn-wa-big" target="_blank">
                     <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
                 </a>
-                <a href="/acceso" class="btn-acc">
+                <a href="{{ url('/acceso') }}" class="btn-acc">
                     <i class="fas fa-sign-in-alt"></i> Acceso al Sistema
                 </a>
             </div>
