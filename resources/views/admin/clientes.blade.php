@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Clientes — {{ $proyecto->nombre }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -218,7 +219,7 @@
 <nav class="navbar">
     <a href="{{ url('/admin') }}" class="nav-brand">
         <div class="nav-logo">
-            <img src="{{ asset('imagenes/imagenes_website/proyecto-lotes-hualhuas-35k.jpeg') }}" alt="BC">
+            <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="BC">
         </div>
         <div class="nav-brand-text">
             <span class="nb-name">BC Inmobiliaria</span>

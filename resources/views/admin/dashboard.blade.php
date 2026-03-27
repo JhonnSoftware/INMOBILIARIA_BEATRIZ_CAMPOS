@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Beatriz Campos Inmobiliaria</title>
+    <link rel="icon" type="image/png" href="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -16,7 +17,7 @@
             --dark:#1a1a2e;
             --dark2:#16213e;
             --sidebar-w:270px;
-            --header-h:68px;
+            --header-h:80px;
             --bg:#f0f2ff;
             --white:#ffffff;
             --border:#e8eaf6;
@@ -47,7 +48,7 @@
         .sb-brand-inner{display:flex;align-items:center;gap:12px;}
         .sb-logo{
             width:46px;height:46px;border-radius:13px;
-            background:linear-gradient(135deg,var(--mg),var(--vt));
+            background:#ffffff;
             display:flex;align-items:center;justify-content:center;
             overflow:hidden;flex-shrink:0;
             box-shadow:0 6px 18px rgba(238,0,187,.35);
@@ -153,12 +154,13 @@
         .topbar{
             height:var(--header-h);
             background:var(--white);
-            border-bottom:1px solid var(--border);
+            border-bottom:2px solid var(--border);
             display:flex;align-items:center;justify-content:space-between;
             padding:0 32px;
             position:sticky;top:0;z-index:100;
+            box-shadow:0 4px 20px rgba(0,0,0,.06);
         }
-        .topbar-left{display:flex;align-items:center;gap:16px;}
+        .topbar-left{display:flex;align-items:center;gap:14px;}
         .sb-toggle{
             width:38px;height:38px;border-radius:10px;
             background:var(--bg);border:none;cursor:pointer;
@@ -166,43 +168,78 @@
             font-size:17px;color:var(--gray);transition:.2s;
         }
         .sb-toggle:hover{background:var(--border);color:var(--text);}
-        .topbar-title{font-size:18px;font-weight:700;color:var(--text);}
+        .topbar-title{font-size:17px;font-weight:700;color:var(--text);}
         .topbar-title span{color:var(--mg);}
-        .topbar-right{display:flex;align-items:center;gap:12px;}
+
+        /* search topbar */
+        .tb-search{
+            display:flex;align-items:center;gap:9px;
+            background:var(--bg);border:1.5px solid var(--border);
+            border-radius:12px;padding:10px 16px;
+            transition:.2s;
+        }
+        .tb-search:focus-within{border-color:rgba(238,0,187,.4);background:#fff;box-shadow:0 0 0 3px rgba(238,0,187,.06);}
+        .tb-search i{font-size:13px;color:var(--gray);}
+        .tb-search input{
+            background:none;border:none;outline:none;
+            font-family:'Poppins',sans-serif;font-size:13px;
+            color:var(--text);width:200px;
+        }
+        .tb-search input::placeholder{color:#b0bac9;}
+
+        .topbar-right{display:flex;align-items:center;gap:10px;}
+
+        /* fecha */
+        .tb-date{
+            font-size:12.5px;font-weight:500;color:var(--gray);
+            background:var(--bg);border:1.5px solid var(--border);
+            border-radius:12px;padding:10px 16px;
+            display:flex;align-items:center;gap:8px;white-space:nowrap;
+        }
+        .tb-date i{color:var(--mg);font-size:13px;}
+
         .tb-icon-btn{
-            width:38px;height:38px;border-radius:10px;
-            background:var(--bg);border:none;cursor:pointer;
+            width:42px;height:42px;border-radius:12px;
+            background:var(--bg);border:1.5px solid var(--border);cursor:pointer;
             display:flex;align-items:center;justify-content:center;
             font-size:16px;color:var(--gray);transition:.2s;position:relative;
         }
-        .tb-icon-btn:hover{background:var(--border);}
+        .tb-icon-btn:hover{background:var(--border);color:var(--text);}
         .tb-notif::after{
-            content:'3';position:absolute;top:6px;right:6px;
-            width:16px;height:16px;border-radius:50%;
+            content:'3';position:absolute;top:5px;right:5px;
+            width:17px;height:17px;border-radius:50%;
             background:var(--mg);color:#fff;font-size:9px;font-weight:700;
             display:flex;align-items:center;justify-content:center;
         }
+
+        /* usuario */
         .tb-user{
             display:flex;align-items:center;gap:10px;
-            background:var(--bg);border-radius:12px;padding:6px 14px 6px 6px;
-            cursor:pointer;border:1px solid var(--border);transition:.2s;
+            background:var(--bg);border-radius:14px;padding:7px 14px 7px 7px;
+            cursor:pointer;border:1.5px solid var(--border);transition:.2s;
         }
-        .tb-user:hover{border-color:rgba(238,0,187,.3);}
+        .tb-user:hover{border-color:rgba(238,0,187,.35);background:#fff;box-shadow:0 4px 14px rgba(238,0,187,.08);}
         .tb-avatar{
-            width:32px;height:32px;border-radius:50%;
+            width:36px;height:36px;border-radius:50%;
             background:linear-gradient(135deg,var(--mg),var(--vt));
             display:flex;align-items:center;justify-content:center;
-            color:#fff;font-size:12px;font-weight:700;
+            color:#fff;font-size:13px;font-weight:700;flex-shrink:0;
+            box-shadow:0 3px 10px rgba(238,0,187,.3);
         }
-        .tb-name{font-size:13px;font-weight:600;color:var(--text);}
+        .tb-user-info{display:flex;flex-direction:column;}
+        .tb-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;}
+        .tb-role{font-size:11px;color:var(--gray);font-weight:400;}
+
+        /* logout */
         .tb-logout{
             display:flex;align-items:center;gap:8px;
-            background:rgba(238,0,187,.08);border:1px solid rgba(238,0,187,.2);
-            color:var(--mg);padding:7px 16px;border-radius:10px;
-            font-size:12.5px;font-weight:600;text-decoration:none;
-            cursor:pointer;transition:.2s;font-family:'Poppins',sans-serif;
+            background:linear-gradient(135deg,rgba(238,0,187,.1),rgba(85,51,204,.08));
+            border:1.5px solid rgba(238,0,187,.3);
+            color:var(--mg);padding:10px 20px;border-radius:12px;
+            font-size:13px;font-weight:600;text-decoration:none;
+            transition:.2s;white-space:nowrap;
         }
-        .tb-logout:hover{background:var(--mg);color:#fff;border-color:var(--mg);}
+        .tb-logout:hover{background:linear-gradient(135deg,var(--mg),var(--vt));color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(238,0,187,.35);transform:translateY(-1px);}
 
         /* content */
         .content{padding:32px;flex:1;}
@@ -369,7 +406,7 @@
     <div class="sb-brand">
         <div class="sb-brand-inner">
             <div class="sb-logo">
-                <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Logo">
+                <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="Logo">
             </div>
             <div class="sb-brand-text">
                 <span class="sb-name">Beatriz Campos</span>
@@ -422,33 +459,129 @@
                 <div class="sb-icon"><i class="fas fa-hand-holding-usd"></i></div>
                 <span>Pagos y Cuotas</span>
             </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-minus-circle"></i></div>
+                <span>Egresos Generales</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-clipboard-list"></i></div>
+                <span>Requerimientos General</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-clipboard"></i></div>
+                <span>Requerimientos Caja Chica</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-mobile-alt"></i></div>
+                <span>Pago Clientes Virtuales</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-calendar-alt"></i></div>
+                <span>Fechas de Vencimiento</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-university"></i></div>
+                <span>Caja General</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-cash-register"></i></div>
+                <span>Caja Chica</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-user-friends"></i></div>
+                <span>Clientes Totales</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-drafting-compass"></i></div>
+                <span>Arquitectura</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-sitemap"></i></div>
+                <span>Gestión Planos Clientes</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-cube"></i></div>
+                <span>Subir Plano 3D</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-user-plus"></i></div>
+                <span>Gestión de Leads</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-file-excel"></i></div>
+                <span>Excel Boletas</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-headset"></i></div>
+                <span>CRM</span>
+            </a>
         </div>
 
         <div class="sb-section">
             <div class="sb-section-title">Contabilidad</div>
             <a href="#" class="sb-link">
-                <div class="sb-icon"><i class="fas fa-chart-pie"></i></div>
-                <span>Ingresos</span>
+                <div class="sb-icon"><i class="fas fa-calculator"></i></div>
+                <span>Contabilidad General</span>
             </a>
             <a href="#" class="sb-link">
-                <div class="sb-icon"><i class="fas fa-receipt"></i></div>
-                <span>Egresos</span>
+                <div class="sb-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span>Datos Contables</span>
             </a>
             <a href="#" class="sb-link">
-                <div class="sb-icon"><i class="fas fa-chart-line"></i></div>
-                <span>Reportes</span>
+                <div class="sb-icon"><i class="fas fa-id-badge"></i></div>
+                <span>Planilla</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-truck"></i></div>
+                <span>Proveedores</span>
             </a>
         </div>
 
         <div class="sb-section">
-            <div class="sb-section-title">Sistema</div>
+            <div class="sb-section-title">Marketing &amp; Analytics</div>
             <a href="#" class="sb-link">
-                <div class="sb-icon"><i class="fas fa-cog"></i></div>
-                <span>Configuración</span>
+                <div class="sb-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Marketing</span>
             </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <span>Dashboard General</span>
+            </a>
+        </div>
+
+        <div class="sb-section">
+            <div class="sb-section-title">Inventario Oficina</div>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-boxes"></i></div>
+                <span>Inventario Oficina</span>
+            </a>
+        </div>
+
+        <div class="sb-section">
+            <div class="sb-section-title">Permisos</div>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-user-shield"></i></div>
+                <span>Gestión Permisos</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-folder-open"></i></div>
+                <span>Historial de Documentos</span>
+            </a>
+            <a href="#" class="sb-link">
+                <div class="sb-icon"><i class="fas fa-users-cog"></i></div>
+                <span>Usuarios del Sistema</span>
+            </a>
+        </div>
+
+        <div class="sb-section">
+            <div class="sb-section-title">Cuenta</div>
             <a href="{{ url('/') }}" class="sb-link">
                 <div class="sb-icon"><i class="fas fa-globe"></i></div>
                 <span>Ir al Sitio Web</span>
+            </a>
+            <a href="{{ url('/acceso') }}" class="sb-link" style="color:rgba(238,0,187,.7);">
+                <div class="sb-icon" style="color:var(--mg);"><i class="fas fa-sign-out-alt"></i></div>
+                <span>Cerrar Sesión</span>
             </a>
         </div>
 
@@ -476,19 +609,30 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="topbar-title">Dashboard <span>General</span></div>
+            <div class="tb-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar módulo, cliente...">
+            </div>
         </div>
         <div class="topbar-right">
-            <button class="tb-icon-btn tb-notif">
+            <div class="tb-date">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="tbDate"></span>
+            </div>
+            <button class="tb-icon-btn tb-notif" title="Notificaciones">
                 <i class="fas fa-bell"></i>
+            </button>
+            <button class="tb-icon-btn" title="Configuración">
+                <i class="fas fa-cog"></i>
             </button>
             <div class="tb-user">
                 <div class="tb-avatar">A</div>
-                <span class="tb-name">Administrador BC</span>
-                <i class="fas fa-chevron-down" style="font-size:11px;color:var(--gray);"></i>
+                <div class="tb-user-info">
+                    <span class="tb-name">Administrador BC</span>
+                    <span class="tb-role">Super Admin</span>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size:10px;color:var(--gray);margin-left:4px;"></i>
             </div>
-            <a href="{{ url('/acceso') }}" class="tb-logout">
-                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-            </a>
         </div>
     </header>
 
@@ -650,6 +794,16 @@
 </div>
 
 <script>
+    // Fecha en vivo
+    function updateDate(){
+        const d = new Date();
+        const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        document.getElementById('tbDate').textContent =
+            dias[d.getDay()] + ' ' + d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear();
+    }
+    updateDate();
+
     const sbToggle = document.getElementById('sbToggle');
     const sidebar  = document.getElementById('sidebar');
     sbToggle.addEventListener('click', () => {

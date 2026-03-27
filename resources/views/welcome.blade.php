@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso — Beatriz Campos Inmobiliaria</title>
+    <link rel="icon" type="image/png" href="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -40,8 +41,7 @@
         /* logo */
         .brand-logo-wrap{
             width:140px;height:140px;border-radius:32px;
-            background:rgba(255,255,255,0.12);
-            backdrop-filter:blur(12px);
+            background:#ffffff;
             border:2px solid rgba(255,255,255,.2);
             display:flex;align-items:center;justify-content:center;
             margin:0 auto 28px;
@@ -99,14 +99,14 @@
             background:#fff;
             display:flex;flex-direction:column;
             align-items:center;justify-content:center;
-            padding:48px 56px;
+            padding:48px 72px;
             position:relative;
         }
         .right::before{
             content:'';position:absolute;top:0;left:0;right:0;height:4px;
             background:linear-gradient(90deg,#EE00BB,#5533CC,#EE00BB);
         }
-        .right-inner{width:100%;max-width:380px;}
+        .right-inner{width:100%;max-width:480px;}
 
         .right-tag{
             display:inline-flex;align-items:center;gap:7px;
@@ -122,55 +122,77 @@
         .right-h1 span{color:#EE00BB;}
         .right-sub{font-size:13.5px;color:#64748b;line-height:1.7;margin-bottom:36px;}
 
-        /* cards de acceso */
-        .access-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:28px;}
-
-        .access-card{
-            display:flex;align-items:center;gap:18px;
-            padding:20px 22px;border-radius:18px;
-            text-decoration:none;border:2px solid transparent;
-            transition:all .3s cubic-bezier(.175,.885,.32,1.275);
-            position:relative;overflow:hidden;
+        /* tabs rol */
+        .role-tabs{display:flex;gap:0;background:#f1f5f9;border-radius:14px;padding:5px;margin-bottom:28px;}
+        .role-tab{
+            flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+            padding:10px 14px;border-radius:10px;cursor:pointer;
+            font-size:13px;font-weight:600;color:#64748b;
+            transition:.25s;border:none;background:none;font-family:'Poppins',sans-serif;
         }
-        .access-card::after{
-            content:'';position:absolute;inset:0;
-            background:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,0));
-            opacity:0;transition:.3s;
-        }
-        .access-card:hover{transform:translateY(-4px);}
-        .access-card:hover::after{opacity:1;}
-        .access-card:active{transform:translateY(-1px);}
+        .role-tab.active-cliente{background:#fff;color:#EE00BB;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+        .role-tab.active-admin{background:#fff;color:#5533CC;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+        .role-tab i{font-size:14px;}
 
-        .ac-cliente{
+        /* form */
+        .login-form{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+        .form-group{display:flex;flex-direction:column;gap:6px;}
+        .form-label{font-size:12.5px;font-weight:600;color:#374151;}
+        .form-input-wrap{position:relative;}
+        .form-input-wrap i.fi-icon{
+            position:absolute;left:14px;top:50%;transform:translateY(-50%);
+            font-size:14px;color:#94a3b8;
+        }
+        .form-input{
+            width:100%;padding:12px 14px 12px 42px;
+            border:1.5px solid #e2e8f0;border-radius:12px;
+            font-family:'Poppins',sans-serif;font-size:13.5px;color:#1a1a2e;
+            background:#fafbfc;outline:none;transition:.2s;
+        }
+        .form-input:focus{border-color:#EE00BB;background:#fff;box-shadow:0 0 0 3px rgba(238,0,187,.07);}
+        .form-input.focus-admin:focus{border-color:#5533CC;box-shadow:0 0 0 3px rgba(85,51,204,.07);}
+
+        .form-input-wrap .eye-btn{
+            position:absolute;right:14px;top:50%;transform:translateY(-50%);
+            background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;
+            transition:.2s;padding:0;
+        }
+        .form-input-wrap .eye-btn:hover{color:#64748b;}
+
+        .form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+        .remember-wrap{display:flex;align-items:center;gap:7px;cursor:pointer;}
+        .remember-wrap input[type=checkbox]{
+            width:15px;height:15px;accent-color:#EE00BB;cursor:pointer;
+        }
+        .remember-wrap span{font-size:12px;color:#64748b;}
+        .forgot-link{font-size:12px;color:#EE00BB;text-decoration:none;font-weight:600;transition:.2s;}
+        .forgot-link:hover{color:#C4009A;}
+
+        /* btn login */
+        .login-btn{
+            width:100%;padding:14px;border-radius:14px;border:none;
+            font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;
+            color:#fff;cursor:pointer;transition:.3s;
+            display:flex;align-items:center;justify-content:center;gap:9px;
             background:linear-gradient(135deg,#EE00BB,#C4009A);
-            box-shadow:0 10px 32px rgba(238,0,187,.35);
+            box-shadow:0 8px 24px rgba(238,0,187,.35);
         }
-        .ac-cliente:hover{box-shadow:0 18px 48px rgba(238,0,187,.5);}
-
-        .ac-admin{
+        .login-btn.btn-admin{
             background:linear-gradient(135deg,#5533CC,#3D1F99);
-            box-shadow:0 10px 32px rgba(85,51,204,.35);
+            box-shadow:0 8px 24px rgba(85,51,204,.35);
         }
-        .ac-admin:hover{box-shadow:0 18px 48px rgba(85,51,204,.5);}
+        .login-btn:hover{transform:translateY(-2px);filter:brightness(1.08);}
+        .login-btn:active{transform:translateY(0);}
 
-        .ac-icon{
-            width:52px;height:52px;border-radius:14px;flex-shrink:0;
-            background:rgba(255,255,255,.18);
-            display:flex;align-items:center;justify-content:center;
-            font-size:22px;color:#fff;
-            box-shadow:0 4px 12px rgba(0,0,0,.15);
+        /* error */
+        .login-error{
+            display:none;
+            background:#fff0f5;border:1.5px solid #fca5a5;
+            border-radius:10px;padding:10px 14px;
+            font-size:12.5px;color:#dc2626;
+            align-items:center;gap:8px;margin-top:-6px;
         }
-        .ac-text{flex:1;}
-        .ac-text .ac-title{display:block;font-size:16px;font-weight:700;color:#fff;margin-bottom:3px;}
-        .ac-text .ac-desc{display:block;font-size:11.5px;color:rgba(255,255,255,.7);font-weight:400;}
-        .ac-arrow{
-            width:34px;height:34px;border-radius:50%;
-            background:rgba(255,255,255,.15);
-            display:flex;align-items:center;justify-content:center;
-            color:rgba(255,255,255,.8);font-size:13px;
-            transition:all .3s;flex-shrink:0;
-        }
-        .access-card:hover .ac-arrow{background:rgba(255,255,255,.25);transform:translateX(3px);color:#fff;}
+        .login-error.show{display:flex;}
 
         /* divider */
         .or-divider{
@@ -192,6 +214,16 @@
         .wa-btn i{font-size:18px;}
 
         /* footer derecha */
+        .back-home-btn{
+            display:inline-flex;align-items:center;gap:8px;
+            color:#64748b;font-size:13px;font-weight:500;
+            text-decoration:none;margin-bottom:28px;
+            padding:9px 18px;border-radius:10px;
+            border:1px solid #e2e8f0;background:#f8fafc;
+            transition:.2s;
+        }
+        .back-home-btn:hover{background:#f0f2ff;color:#5533CC;border-color:rgba(85,51,204,.25);}
+        .back-home-btn i{font-size:12px;}
         .right-footer{
             text-align:center;margin-top:28px;
             padding-top:20px;border-top:1px solid #f1f5f9;
@@ -200,24 +232,19 @@
         .right-footer strong{color:#EE00BB;}
 
         /* ===== RESPONSIVE ===== */
+        @media(max-width:1024px){
+            .right{padding:48px 40px;}
+            .right-inner{max-width:440px;}
+        }
         @media(max-width:900px){
             body{grid-template-columns:1fr;}
-            .left{
-                padding:36px 28px;
-                min-height:auto;
-            }
-            .left::before,.left::after{display:none;}
-            .brand-logo-wrap{width:100px;height:100px;border-radius:24px;margin-bottom:16px;}
-            .brand-name{font-size:20px;}
-            .brand-stats,.brand-chips{display:none;}
-            .brand-sub{margin-bottom:0;}
-            .back-link{margin-top:16px;}
-            .right{padding:36px 24px 40px;}
+            .left{display:none;}
+            .right{padding:40px 32px;min-height:100vh;}
+            .right-inner{max-width:100%;}
             .right::before{height:3px;}
         }
-
         @media(max-width:480px){
-            .right{padding:28px 20px 36px;}
+            .right{padding:32px 20px 36px;}
             .right-h1{font-size:24px;}
             .access-card{padding:16px 18px;gap:14px;}
             .ac-icon{width:44px;height:44px;font-size:18px;}
@@ -232,7 +259,7 @@
     <div class="left">
         <div class="left-content">
             <div class="brand-logo-wrap">
-                <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Beatriz Campos Inmobiliaria">
+                <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="Beatriz Campos Inmobiliaria">
             </div>
             <div class="brand-name">
                 <em>Beatriz Campos</em><br>Inmobiliaria
@@ -276,58 +303,136 @@
             </div>
 
             <h1 class="right-h1">
-                Selecciona tu<br><span>tipo de acceso</span>
+                Bienvenido de<br><span>vuelta</span>
             </h1>
             <p class="right-sub">
-                Elige el portal correspondiente para ingresar a la plataforma de gestión inmobiliaria.
+                Ingresa tus credenciales para acceder al sistema de gestión inmobiliaria.
             </p>
 
-            <div class="access-cards">
-
-                <a href="{{ url('/cliente') }}" class="access-card ac-cliente">
-                    <div class="ac-icon">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                    <div class="ac-text">
-                        <span class="ac-title">Portal Cliente</span>
-                        <span class="ac-desc">Ver mis propiedades y contratos</span>
-                    </div>
-                    <div class="ac-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </a>
-
-                <a href="{{ url('/admin') }}" class="access-card ac-admin">
-                    <div class="ac-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="ac-text">
-                        <span class="ac-title">Panel Administrativo</span>
-                        <span class="ac-desc">Gestión completa del sistema</span>
-                    </div>
-                    <div class="ac-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </a>
-
+            <!-- Tabs rol -->
+            <div class="role-tabs">
+                <button class="role-tab active-cliente" id="tabCliente" onclick="setRol('cliente')">
+                    <i class="fas fa-user"></i> Cliente
+                </button>
+                <button class="role-tab" id="tabAdmin" onclick="setRol('admin')">
+                    <i class="fas fa-shield-alt"></i> Administrador
+                </button>
             </div>
 
-            <div class="or-divider">
-                <div class="or-line"></div>
-                <div class="or-text">¿Tienes consultas?</div>
-                <div class="or-line"></div>
-            </div>
+            <!-- Formulario -->
+            <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
 
-            <a href="https://wa.me/51900000000" class="wa-btn" target="_blank">
-                <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
-            </a>
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-user fi-icon"></i>
+                        <input type="text" id="inputUser" class="form-input" placeholder="Ingresa tu usuario">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-lock fi-icon"></i>
+                        <input type="password" id="inputPass" class="form-input" placeholder="••••••••">
+                        <button type="button" class="eye-btn" onclick="togglePass()">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-error" id="loginError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMsg">Usuario o contraseña incorrectos.</span>
+                </div>
+
+                <div class="form-row">
+                    <label class="remember-wrap">
+                        <input type="checkbox"> <span>Recordarme</span>
+                    </label>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+
+            </form>
+
 
             <div class="right-footer">
+                <a href="{{ url('/') }}" class="back-home-btn" style="display:inline-flex;margin-bottom:16px;">
+                    <i class="fas fa-arrow-left"></i> Volver a la página principal
+                </a>
                 <p>&copy; 2026 <strong>Beatriz Campos Inmobiliaria</strong>. Todos los derechos reservados.</p>
             </div>
 
         </div>
     </div>
 
+<script>
+    let rolActual = 'cliente';
+
+    function setRol(rol) {
+        rolActual = rol;
+        const tabC = document.getElementById('tabCliente');
+        const tabA = document.getElementById('tabAdmin');
+        const btn  = document.getElementById('loginBtn');
+        const inputs = document.querySelectorAll('.form-input');
+
+        tabC.className = 'role-tab' + (rol === 'cliente' ? ' active-cliente' : '');
+        tabA.className = 'role-tab' + (rol === 'admin'   ? ' active-admin'   : '');
+
+        if (rol === 'admin') {
+            btn.className = 'login-btn btn-admin';
+            inputs.forEach(i => i.classList.add('focus-admin'));
+        } else {
+            btn.className = 'login-btn';
+            inputs.forEach(i => i.classList.remove('focus-admin'));
+        }
+        document.getElementById('loginError').classList.remove('show');
+    }
+
+    function togglePass() {
+        const input = document.getElementById('inputPass');
+        const icon  = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const user = document.getElementById('inputUser').value.trim();
+        const pass = document.getElementById('inputPass').value.trim();
+        const err  = document.getElementById('loginError');
+        const msg  = document.getElementById('errorMsg');
+
+        if (!user || !pass) {
+            msg.textContent = 'Por favor completa todos los campos.';
+            err.classList.add('show'); return;
+        }
+
+        if (rolActual === 'admin') {
+            if (user === 'admin' && pass === 'admin123') {
+                window.location.href = '{{ url("/admin") }}';
+            } else {
+                msg.textContent = 'Credenciales de administrador incorrectas.';
+                err.classList.add('show');
+            }
+        } else {
+            if (user && pass) {
+                window.location.href = '{{ url("/cliente") }}';
+            } else {
+                msg.textContent = 'Usuario o contraseña incorrectos.';
+                err.classList.add('show');
+            }
+        }
+    }
+</script>
 </body>
 </html>

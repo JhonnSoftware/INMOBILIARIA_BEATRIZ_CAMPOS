@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beatriz Campos Inmobiliaria | Lotes en Hualhuas, Junín</title>
+    <link rel="icon" type="image/png" href="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -591,16 +592,35 @@
         /* ============================
            FLOATING BUTTONS
         ============================ */
-        .float-wa{position:fixed;bottom:84px;right:26px;z-index:500;}
-        .float-wa a{
-            display:flex;align-items:center;gap:8px;
-            background:#25D366;color:#fff;
-            padding:11px 20px;border-radius:50px;
-            font-size:13px;font-weight:700;text-decoration:none;
-            box-shadow:0 8px 28px rgba(37,211,102,.45);transition:.3s;
+        .float-wa{display:none;}
+        /* redes sociales + whatsapp flotantes */
+        .float-social{
+            position:fixed;right:20px;bottom:80px;
+            z-index:500;display:flex;flex-direction:column;gap:12px;
+            align-items:center;
         }
-        .float-wa a:hover{transform:scale(1.05);}
-        .float-wa i{font-size:20px;}
+        .fs-ball{
+            width:50px;height:50px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            font-size:22px;color:#fff;text-decoration:none;
+            box-shadow:0 6px 20px rgba(0,0,0,.25);
+            transition:.3s;position:relative;
+        }
+        .fs-ball:hover{transform:scale(1.15) rotate(360deg);transition:transform .5s cubic-bezier(.175,.885,.32,1.275);}
+        .fs-ball.wa{background:linear-gradient(135deg,#25D366,#1da851);box-shadow:0 6px 20px rgba(37,211,102,.45);}
+        .fs-ball.yt{background:linear-gradient(135deg,#ff0000,#cc0000);}
+        .fs-ball.ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);}
+        .fs-ball.tt{background:#000000;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+        .fs-ball .fs-tooltip{
+            position:absolute;right:58px;
+            background:rgba(0,0,0,.75);color:#fff;
+            font-size:11px;font-weight:600;white-space:nowrap;
+            padding:4px 10px;border-radius:6px;
+            opacity:0;pointer-events:none;transition:.2s;
+            font-family:'Poppins',sans-serif;
+        }
+        .fs-ball:hover .fs-tooltip{opacity:1;}
+
         .back-top{
             position:fixed;bottom:28px;right:26px;z-index:500;
             width:46px;height:46px;border-radius:13px;
@@ -661,7 +681,7 @@
 <nav class="navbar" id="navbar">
     <div class="nav-wrap">
         <a href="#inicio" class="nav-brand">
-            <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Logo Beatriz Campos">
+            <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="Logo Beatriz Campos">
             <div class="nav-brand-text">
                 <b>Beatriz Campos</b>
                 <span>Inmobiliaria</span>
@@ -1167,7 +1187,7 @@
         <div class="footer-top">
             <div class="f-brand">
                 <a href="#inicio">
-                    <img src="{{ asset('imagenes/inmobiliaria_bc.jpeg') }}" alt="Logo BC Inmobiliaria">
+                    <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="Logo BC Inmobiliaria">
                     <span>Beatriz Campos Inmobiliaria</span>
                 </a>
                 <p>Hacemos realidad el sueño de miles de familias en Junín. Lotes con habilitación urbana completa y financiamiento sin intereses.</p>
@@ -1211,6 +1231,26 @@
         </div>
     </div>
 </footer>
+
+<!-- REDES SOCIALES FLOTANTES -->
+<div class="float-social">
+    <a href="https://wa.me/51900000000?text=Hola!%20Quiero%20informaci%C3%B3n%20sobre%20los%20lotes" target="_blank" class="fs-ball wa">
+        <i class="fab fa-whatsapp"></i>
+        <span class="fs-tooltip">WhatsApp</span>
+    </a>
+    <a href="https://www.youtube.com/@inmobiliariabeatrizcampos" target="_blank" class="fs-ball yt">
+        <i class="fab fa-youtube"></i>
+        <span class="fs-tooltip">YouTube</span>
+    </a>
+    <a href="https://www.instagram.com/inmobiliaria.beatriz.campos?igsh=MTAzYnZqc2VlZW9oNQ%3D%3D" target="_blank" class="fs-ball ig">
+        <i class="fab fa-instagram"></i>
+        <span class="fs-tooltip">Instagram</span>
+    </a>
+    <a href="https://www.tiktok.com/@inmobiliariabeatrizcampo?_r=1&_t=ZS-94nmgQB1I7b" target="_blank" class="fs-ball tt">
+        <i class="fab fa-tiktok"></i>
+        <span class="fs-tooltip">TikTok</span>
+    </a>
+</div>
 
 <!-- FLOATING WA -->
 <div class="float-wa">
