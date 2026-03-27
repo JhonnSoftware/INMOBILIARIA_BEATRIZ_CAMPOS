@@ -91,48 +91,88 @@
         ============================ */
         .hero{
             min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
-            padding-top:70px;overflow:hidden;
+            overflow:hidden;
         }
         /* Lado izquierdo */
         .hero-left{
-            background:linear-gradient(155deg,var(--dark2) 0%,var(--dark) 60%,#0f1535 100%);
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 20%, rgba(238,0,187,.22) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 80%, rgba(85,51,204,.28) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 60% 50%, rgba(196,0,154,.12) 0%, transparent 55%),
+                linear-gradient(160deg, #0d0521 0%, #1a0845 45%, #230c55 100%);
             display:flex;flex-direction:column;justify-content:center;
-            padding:60px 56px 60px 60px;position:relative;overflow:hidden;
+            padding:130px 56px 60px 60px;position:relative;overflow:hidden;
         }
+        /* líneas decorativas tipo "grid" sutil */
         .hero-left::before{
-            content:'';position:absolute;top:-100px;left:-100px;
-            width:400px;height:400px;border-radius:50%;
-            background:radial-gradient(circle,rgba(238,0,187,.18) 0%,transparent 70%);
+            content:'';position:absolute;inset:0;
+            background-image:
+                linear-gradient(rgba(238,0,187,.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(238,0,187,.06) 1px, transparent 1px);
+            background-size:48px 48px;
+            mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+            -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
         }
+        /* glow brillante arriba-izquierda */
         .hero-left::after{
-            content:'';position:absolute;bottom:-80px;right:0;
-            width:300px;height:300px;border-radius:50%;
-            background:radial-gradient(circle,rgba(85,51,204,.2) 0%,transparent 70%);
+            content:'';position:absolute;top:-60px;left:-80px;
+            width:500px;height:500px;border-radius:50%;
+            background:radial-gradient(circle, rgba(238,0,187,.15) 0%, rgba(85,51,204,.1) 40%, transparent 70%);
+            pointer-events:none;
         }
         .hero-pill{
             display:inline-flex;align-items:center;gap:8px;
             border:1px solid rgba(238,0,187,.35);background:rgba(238,0,187,.08);
             border-radius:50px;padding:7px 18px;
             color:rgba(255,255,255,.9);font-size:11.5px;font-weight:600;
-            letter-spacing:1px;text-transform:uppercase;margin-bottom:22px;width:fit-content;
+            letter-spacing:1px;text-transform:uppercase;margin-bottom:22px;margin-top:8px;width:fit-content;
             position:relative;z-index:1;
         }
         .hero-pill .live{width:8px;height:8px;border-radius:50%;background:#25D366;animation:blink 1.4s infinite;}
         @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
         .hero-h1{
-            font-size:clamp(34px,4.5vw,60px);font-weight:900;color:#fff;
-            line-height:1.08;margin-bottom:20px;position:relative;z-index:1;
+            font-size:clamp(38px,5vw,68px);font-weight:900;color:#fff;
+            line-height:1.05;margin-bottom:20px;position:relative;z-index:1;
+            text-shadow:0 2px 40px rgba(238,0,187,.15);
         }
         .hero-h1 em{
             font-style:normal;
-            background:linear-gradient(90deg,var(--mg),#ff66dd);
+            background:linear-gradient(90deg,#ff00cc,#ff77ee,#ee00bb);
+            background-size:200% auto;
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+            animation:shimmer 3s linear infinite;
         }
+        @keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
         .hero-p{
             font-size:15px;color:rgba(255,255,255,.65);line-height:1.75;
-            margin-bottom:36px;max-width:440px;position:relative;z-index:1;
+            margin-bottom:22px;max-width:440px;position:relative;z-index:1;
         }
-        .hero-btns{display:flex;gap:14px;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:48px;}
+        /* lista de features */
+        .hero-features{
+            list-style:none;padding:0;margin:0 0 24px;
+            display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;
+            position:relative;z-index:1;
+        }
+        .hero-features li{
+            display:flex;align-items:center;gap:9px;
+            color:rgba(255,255,255,.92);font-size:13px;font-weight:500;
+            background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+            border-radius:10px;padding:9px 14px;
+            transition:background .25s;
+        }
+        .hero-features li:hover{background:rgba(238,0,187,.12);border-color:rgba(238,0,187,.3);}
+        .hero-features li i{color:#25D366;font-size:15px;flex-shrink:0;}
+        /* info teléfono */
+        .hero-contact-info{
+            display:flex;align-items:center;gap:10px;
+            color:rgba(255,255,255,.65);font-size:13px;
+            margin-bottom:28px;position:relative;z-index:1;
+            background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+            border-radius:50px;padding:10px 20px;width:fit-content;
+        }
+        .hero-contact-info i{color:var(--mg);}
+        .hero-contact-info strong{color:#fff;font-weight:700;}
+        .hero-btns{display:flex;gap:14px;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:20px;}
         .btn-mg{
             display:inline-flex;align-items:center;gap:9px;
             background:linear-gradient(135deg,var(--mg),var(--mg2));
@@ -170,19 +210,43 @@
             position:absolute;inset:0;
             background:linear-gradient(to right,rgba(26,26,46,.55) 0%,transparent 50%);
         }
+        /* badge de precio en la foto */
+        .hero-badge-price{
+            position:absolute;top:102px;right:28px;z-index:2;
+            background:linear-gradient(135deg,var(--mg),var(--mg2));
+            border-radius:20px;padding:16px 22px;text-align:center;
+            box-shadow:0 8px 32px rgba(238,0,187,.55);
+        }
+        .hbp-label{font-size:10px;color:rgba(255,255,255,.8);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;}
+        .hbp-price{font-size:26px;font-weight:900;color:#fff;line-height:1.1;margin:2px 0;}
+        .hbp-sub{font-size:10px;color:rgba(255,255,255,.75);font-weight:500;}
         /* tarjeta flotante en la foto */
         .hero-float{
-            position:absolute;bottom:36px;left:28px;right:28px;
-            background:rgba(255,255,255,.95);backdrop-filter:blur(16px);
-            border-radius:20px;padding:20px 22px;
-            display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-            box-shadow:0 12px 40px rgba(0,0,0,.18);
+            position:absolute;bottom:24px;left:24px;right:24px;z-index:2;
+            background:rgba(255,255,255,.97);backdrop-filter:blur(16px);
+            border-radius:18px;padding:16px 20px;
+            display:flex;align-items:center;gap:16px;
+            box-shadow:0 12px 40px rgba(0,0,0,.2);
         }
-        .hf-item{text-align:center;padding:8px 12px;}
-        .hf-item:not(:last-child){border-right:1px solid rgba(0,0,0,.06);}
-        .hf-price{font-size:20px;font-weight:900;color:var(--mg);line-height:1;}
-        .hf-name{font-size:11px;font-weight:600;color:var(--dark);margin:3px 0 2px;}
-        .hf-loc{font-size:10px;color:var(--gray);}
+        .hf-icon{
+            width:48px;height:48px;border-radius:14px;flex-shrink:0;
+            background:linear-gradient(135deg,var(--mg),var(--mg2));
+            display:flex;align-items:center;justify-content:center;
+        }
+        .hf-icon i{color:#fff;font-size:20px;}
+        .hf-info{flex:1;min-width:0;}
+        .hf-name{font-size:14px;font-weight:700;color:var(--dark);}
+        .hf-loc{font-size:11px;color:var(--gray);margin-top:3px;}
+        .hf-loc i{color:var(--mg);font-size:10px;margin-right:2px;}
+        .hf-cta{
+            display:inline-flex;align-items:center;gap:7px;flex-shrink:0;
+            background:linear-gradient(135deg,#25D366,#1da851);
+            color:#fff;padding:11px 18px;border-radius:50px;
+            font-size:12px;font-weight:700;text-decoration:none;
+            white-space:nowrap;box-shadow:0 4px 16px rgba(37,211,102,.4);
+            transition:transform .3s;
+        }
+        .hf-cta:hover{transform:translateY(-2px);}
 
         /* ============================
            BADGES — servicios incluidos
@@ -228,7 +292,10 @@
            PROYECTOS
         ============================ */
         #proyectos{background:var(--light);}
-        .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+        .proj-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:26px;}
+        .proj-card{grid-column:span 2;}
+        .proj-card:nth-child(4){grid-column:2/4;}
+        .proj-card:nth-child(5){grid-column:4/6;}
         .proj-card{
             background:#fff;border-radius:22px;overflow:hidden;
             box-shadow:0 4px 24px rgba(0,0,0,.06);
@@ -237,6 +304,7 @@
         }
         .proj-card:hover{transform:translateY(-10px);box-shadow:0 24px 60px rgba(85,51,204,.14);}
         .proj-img-wrap{position:relative;height:230px;overflow:hidden;}
+        .proj-cover-link{display:block;height:100%;}
         .proj-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
         .proj-card:hover .proj-img-wrap img{transform:scale(1.07);}
         .proj-ribbon{
@@ -245,13 +313,20 @@
             color:#fff;font-size:10.5px;font-weight:700;
             padding:5px 14px;border-radius:50px;letter-spacing:.5px;
         }
-        .proj-ribbon.new{background:linear-gradient(135deg,#f59e0b,#d97706);}
+        .proj-ribbon.new{background:linear-gradient(135deg,var(--mg),var(--vt));}
         .proj-body{padding:26px 24px;}
-        .proj-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
-        .proj-name{font-size:18px;font-weight:800;color:var(--dark);line-height:1.2;}
-        .proj-price-box{text-align:right;flex-shrink:0;margin-left:10px;}
-        .proj-price{font-size:22px;font-weight:900;color:var(--mg);line-height:1;}
-        .proj-psub{font-size:10px;color:var(--gray);font-weight:400;}
+        .proj-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+        .proj-name{font-size:17px;font-weight:800;color:var(--dark);line-height:1.2;flex:1;}
+        .proj-name a{text-decoration:none;color:inherit;transition:.2s;}
+        .proj-name a:hover{color:var(--vt);}
+        .proj-maps-link{
+            display:inline-flex;align-items:center;gap:5px;flex-shrink:0;
+            background:linear-gradient(135deg,var(--vt),var(--vt2));
+            color:#fff;font-size:11px;font-weight:700;
+            padding:6px 12px;border-radius:50px;text-decoration:none;
+            box-shadow:0 4px 12px rgba(85,51,204,.3);transition:.3s;white-space:nowrap;
+        }
+        .proj-maps-link:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(85,51,204,.4);}
         .proj-loc{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray);margin-bottom:16px;}
         .proj-loc i{color:var(--mg);font-size:12px;}
         .proj-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
@@ -415,16 +490,33 @@
         }
         .tc i{color:var(--mg);font-size:15px;flex-shrink:0;}
         .tc span{font-size:12.5px;font-weight:500;color:var(--dark);}
-        .testi-photo{position:relative;}
-        .testi-photo img{
-            width:100%;border-radius:24px;object-fit:cover;
-            box-shadow:0 24px 64px rgba(238,0,187,.18);
+        /* slider testimonios */
+        .testi-photo{position:relative;padding-bottom:32px;}
+        .testi-slider{position:relative;border-radius:24px;overflow:hidden;box-shadow:0 24px 64px rgba(238,0,187,.18);}
+        .testi-slides{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1);width:100%;}
+        .testi-slide{min-width:100%;flex-shrink:0;position:relative;}
+        .testi-slide img{width:100%;height:460px;display:block;object-fit:cover;object-position:center top;}
+        .testi-prev,.testi-next{
+            position:absolute;top:50%;transform:translateY(-50%);z-index:10;
+            background:rgba(255,255,255,.9);border:none;cursor:pointer;
+            width:40px;height:40px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            font-size:14px;color:var(--mg);box-shadow:0 4px 16px rgba(0,0,0,.15);transition:.3s;
         }
+        .testi-prev{left:12px;}
+        .testi-next{right:12px;}
+        .testi-prev:hover,.testi-next:hover{background:var(--mg);color:#fff;}
+        .testi-dots{display:flex;justify-content:center;gap:8px;margin-top:16px;}
+        .testi-dot{
+            width:8px;height:8px;border-radius:50%;
+            background:rgba(238,0,187,.25);border:none;cursor:pointer;transition:.3s;
+        }
+        .testi-dot.active{background:var(--mg);width:24px;border-radius:50px;}
         .testi-float-badge{
-            position:absolute;bottom:-18px;right:-18px;
+            position:absolute;bottom:14px;right:-18px;
             background:linear-gradient(135deg,var(--mg),var(--vt));
             color:#fff;border-radius:18px;padding:16px 22px;text-align:center;
-            box-shadow:0 12px 32px rgba(238,0,187,.4);
+            box-shadow:0 12px 32px rgba(238,0,187,.4);z-index:5;
         }
         .tfb-num{font-size:32px;font-weight:900;line-height:1;}
         .tfb-txt{font-size:11px;font-weight:600;opacity:.85;}
@@ -453,9 +545,9 @@
             margin-bottom:28px;
         }
         .ubic-map-card{
-            position:relative;border-radius:22px;overflow:hidden;
+            display:block;position:relative;border-radius:22px;overflow:hidden;
             height:300px;box-shadow:0 16px 48px rgba(0,0,0,.4);
-            transition:.3s;
+            transition:.3s;text-decoration:none;
         }
         .ubic-map-card:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.5);}
         .ubic-map-card img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -478,6 +570,14 @@
             display:flex;align-items:center;gap:7px;
         }
         .ubic-map-badge i{color:var(--mg);}
+        .ubic-map-btn{
+            position:absolute;top:16px;right:16px;z-index:5;
+            background:var(--mg);color:#fff;
+            padding:8px 14px;border-radius:50px;font-size:12px;font-weight:700;
+            text-decoration:none;display:flex;align-items:center;gap:6px;
+            box-shadow:0 4px 16px rgba(238,0,187,.4);transition:.3s;
+        }
+        .ubic-map-btn:hover{background:#fff;color:var(--mg);transform:scale(1.05);}
         /* info cards en fila */
         .ubic-cards-row{
             display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
@@ -518,30 +618,34 @@
            CTA FINAL
         ============================ */
         #cta{
-            background:var(--dark);
+            background:linear-gradient(160deg,#0d0521 0%,#1a0845 50%,#0d0521 100%);
             position:relative;overflow:hidden;text-align:center;
         }
         #cta::before{
             content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-            width:700px;height:700px;border-radius:50%;
-            background:radial-gradient(circle,rgba(238,0,187,.12) 0%,transparent 65%);
+            width:800px;height:800px;border-radius:50%;
+            background:radial-gradient(circle,rgba(238,0,187,.14) 0%,rgba(85,51,204,.08) 40%,transparent 70%);
         }
         #cta .s-h2{color:#fff;position:relative;z-index:1;}
-        #cta .s-sub{color:rgba(255,255,255,.55);margin:0 auto 40px;position:relative;z-index:1;}
-        .cta-contacts{
+        #cta .s-sub{color:rgba(255,255,255,.55);margin:0 auto 48px;position:relative;z-index:1;}
+        .cta-garantias{
             display:flex;gap:20px;justify-content:center;flex-wrap:wrap;
-            margin-bottom:40px;position:relative;z-index:1;
+            margin-bottom:48px;position:relative;z-index:1;
         }
-        .cta-c{
-            display:flex;flex-direction:column;align-items:center;gap:8px;
-            background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-            border-radius:18px;padding:24px 32px;text-decoration:none;
-            transition:.3s;min-width:170px;
+        .cta-g{
+            display:flex;flex-direction:column;align-items:center;gap:10px;
+            background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+            border-radius:20px;padding:28px 28px;min-width:190px;flex:1;max-width:240px;
         }
-        .cta-c:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);transform:translateY(-4px);}
-        .cta-c i{font-size:28px;margin-bottom:4px;}
-        .cta-c .cc-t{font-size:13px;font-weight:600;color:#fff;}
-        .cta-c .cc-v{font-size:12px;color:rgba(255,255,255,.5);}
+        .cta-g-ic{
+            width:52px;height:52px;border-radius:16px;
+            background:linear-gradient(135deg,var(--mg),var(--mg2));
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 8px 20px rgba(238,0,187,.35);
+        }
+        .cta-g-ic i{color:#fff;font-size:22px;}
+        .cta-g-t{font-size:14px;font-weight:700;color:#fff;}
+        .cta-g-v{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
         .cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
         .btn-wa-big{
             display:inline-flex;align-items:center;gap:12px;
@@ -611,6 +715,7 @@
         .fs-ball.yt{background:linear-gradient(135deg,#ff0000,#cc0000);}
         .fs-ball.ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);}
         .fs-ball.tt{background:#000000;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+        .fs-ball.fb{background:linear-gradient(135deg,#1877F2,#0d5fc7);box-shadow:0 6px 20px rgba(24,119,242,.45);}
         .fs-ball .fs-tooltip{
             position:absolute;right:58px;
             background:rgba(0,0,0,.75);color:#fff;
@@ -639,8 +744,9 @@
         @media(max-width:1100px){
             .hero{grid-template-columns:1fr;}
             .hero-right{height:55vw;min-height:360px;}
-            .hero-left{padding:48px 40px;}
+            .hero-left{padding:110px 40px 48px;}
             .proj-grid{grid-template-columns:1fr 1fr;}
+            .proj-card{grid-column:span 1!important;}
             .why-grid{grid-template-columns:1fr;}
             .why-img-col{max-width:500px;margin:0 auto;}
             .footer-top{grid-template-columns:1fr 1fr;}
@@ -649,10 +755,19 @@
             .nav-menu,.nav-wa,.nav-login{display:none;}
             .hamburger{display:block;}
             section{padding:64px 20px;}
-            .hero-left{padding:40px 24px;}
-            .hero-btns{flex-direction:column;}
-            .hero-float{grid-template-columns:1fr;gap:0;}
-            .hf-item:not(:last-child){border-right:none;border-bottom:1px solid rgba(0,0,0,.06);}
+            .hero-left{padding:96px 20px 44px;align-items:flex-start;text-align:left;}
+            .hero-pill{justify-content:flex-start;font-size:10.5px;}
+            .hero-p{text-align:left;font-size:14px;}
+            .hero-stats{justify-content:space-between;gap:0;padding-top:24px;}
+            .hs-num{font-size:22px;}
+            .hero-btns{flex-direction:column;align-items:stretch;width:100%;}
+            .btn-mg,.btn-ghost{width:100%;justify-content:center;padding:14px 20px;}
+            .hero-features{grid-template-columns:1fr 1fr;gap:8px;}
+            .hero-features li{font-size:12px;padding:8px 10px;gap:7px;}
+            .hero-badge-price{top:80px;right:16px;padding:12px 16px;}
+            .hbp-price{font-size:20px;}
+            .hero-float{flex-wrap:wrap;gap:12px;}
+            .hf-cta{width:100%;justify-content:center;}
             .gal-grid{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,190px);}
             .gal-item.tall{grid-row:span 2;}
             .steps-row{grid-template-columns:1fr 1fr;}
@@ -668,8 +783,9 @@
             .gal-item.tall{grid-row:span 1;height:220px;}
             .gal-item{height:200px;}
             .steps-row{grid-template-columns:1fr;}
-            .hero-stats{gap:18px;}
-            .hs-num{font-size:22px;}
+            .hero-stats{gap:0;justify-content:space-between;}
+            .hs-num{font-size:20px;}
+            .hero-features{grid-template-columns:1fr 1fr;gap:7px;}
             .float-wa a span{display:none;}
             .float-wa a{padding:11px;border-radius:50%;width:48px;height:48px;justify-content:center;}
         }
@@ -726,62 +842,74 @@
     <!-- izquierda: texto -->
     <div class="hero-left">
         <div class="hero-pill">
-            <span class="live"></span> Proyectos disponibles ahora
+            <span class="live"></span>&nbsp;<i class="fas fa-map-marker-alt"></i>&nbsp; Hualhuas Km 12 · Huancayo, Junín
         </div>
         <h1 class="hero-h1">
-            Tu <em>lote propio</em><br>en Hualhuas<br>está aquí
+            Tu lote propio<br>desde <em>S/. 39,000</em>
         </h1>
         <p class="hero-p">
-            Lotes con Habilitación Urbana completa, financiamiento
-            sin intereses y todos los servicios básicos incluidos.
-            Haz realidad el sueño de tu familia hoy.
+            Lotes de <strong style="color:#fff;">90 y 100 m²</strong> a solo 20 min de Huancayo.
+            Todos los servicios instalados, documentos en regla y
+            <strong style="color:#fff;">financiamiento sin intereses</strong>.
         </p>
+        <ul class="hero-features">
+            <li><i class="fas fa-check-circle"></i> Agua y desagüe</li>
+            <li><i class="fas fa-check-circle"></i> Luz eléctrica</li>
+            <li><i class="fas fa-check-circle"></i> Pistas y veredas</li>
+            <li><i class="fas fa-check-circle"></i> Documentos en regla</li>
+            <li><i class="fas fa-check-circle"></i> Sin intereses</li>
+            <li><i class="fas fa-check-circle"></i> Hab. urbana completa</li>
+        </ul>
         <div class="hero-btns">
-            <a href="#proyectos" class="btn-mg">
-                <i class="fas fa-home"></i> Ver Proyectos
+            <a href="https://wa.me/51929303999?text=Hola!%20Quiero%20agendar%20una%20visita%20al%20lote%20en%20Hualhuas" target="_blank" class="btn-mg">
+                <i class="fab fa-whatsapp"></i> Agendar Visita
             </a>
-            <a href="#cta" class="btn-ghost">
-                <i class="fas fa-phone"></i> Más Información
+            <a href="#proyectos" class="btn-ghost">
+                <i class="fas fa-home"></i> Ver Proyectos
             </a>
         </div>
         <div class="hero-stats">
             <div class="hs-item">
-                <span class="hs-num">3+</span>
-                <span class="hs-lbl">Proyectos activos</span>
+                <span class="hs-num">252+</span>
+                <span class="hs-lbl">Familias felices</span>
             </div>
             <div class="hs-item">
-                <span class="hs-num">100+</span>
-                <span class="hs-lbl">Familias atendidas</span>
+                <span class="hs-num">90m²</span>
+                <span class="hs-lbl">Desde</span>
             </div>
             <div class="hs-item">
                 <span class="hs-num">0%</span>
                 <span class="hs-lbl">Intereses</span>
             </div>
+            <div class="hs-item">
+                <span class="hs-num">20'</span>
+                <span class="hs-lbl">De Huancayo</span>
+            </div>
         </div>
     </div>
 
-    <!-- derecha: foto + tarjeta flotante -->
+    <!-- derecha: foto + elementos flotantes -->
     <div class="hero-right">
         <img class="hero-photo"
-             src="{{ asset('imagenes/imagenes_website/proyecto-carretera-central-75k.jpeg') }}"
-             alt="Proyecto Carretera Central - Beatriz Campos">
+             src="{{ asset('imagenes/imagenes_website/website_imagen_principal.jpeg') }}"
+             alt="Lotes Hualhuas - Beatriz Campos Inmobiliaria">
         <div class="hero-right-overlay"></div>
+        <!-- badge precio arriba derecha -->
+        <div class="hero-badge-price">
+            <div class="hbp-label">Desde</div>
+            <div class="hbp-price">S/. 39,000</div>
+            <div class="hbp-sub">Sin intereses</div>
+        </div>
+        <!-- tarjeta info abajo -->
         <div class="hero-float">
-            <div class="hf-item">
-                <div class="hf-price">S/. 35,000</div>
-                <div class="hf-name">Lotes Hualhuas</div>
-                <div class="hf-loc"><i class="fas fa-map-marker-alt" style="color:var(--mg);"></i> Av. 13 de Diciembre</div>
+            <div class="hf-icon"><i class="fas fa-ruler-combined"></i></div>
+            <div class="hf-info">
+                <div class="hf-name">Lotes 90 y 100 m² — Hualhuas</div>
+                <div class="hf-loc"><i class="fas fa-map-marker-alt"></i> Km 12 lado Norte · 20 min de Huancayo</div>
             </div>
-            <div class="hf-item">
-                <div class="hf-price">S/. 50,000</div>
-                <div class="hf-name">Calle Principal</div>
-                <div class="hf-loc"><i class="fas fa-map-marker-alt" style="color:var(--mg);"></i> Calle Huancayo</div>
-            </div>
-            <div class="hf-item">
-                <div class="hf-price">S/. 75,000</div>
-                <div class="hf-name">Carretera Central</div>
-                <div class="hf-loc"><i class="fas fa-map-marker-alt" style="color:var(--mg);"></i> Óvalo Hualhuas</div>
-            </div>
+            <a href="https://wa.me/51929303999?text=Hola!%20Quiero%20una%20visita%20sin%20compromiso%20al%20lote" target="_blank" class="hf-cta">
+                <i class="fab fa-whatsapp"></i> Visita gratis
+            </a>
         </div>
     </div>
 </section>
@@ -789,13 +917,13 @@
 <!-- ========== BADGES ========== -->
 <div class="badges-bar">
     <div class="badges-wrap">
-        <div class="badge"><i class="fas fa-tint"></i> Agua potable</div>
+<div class="badge"><i class="fas fa-tint"></i> Agua potable</div>
         <div class="badge"><i class="fas fa-bolt"></i> Luz eléctrica</div>
         <div class="badge"><i class="fas fa-soap"></i> Desagüe</div>
-        <div class="badge"><i class="fas fa-lightbulb"></i> Alumbrado público</div>
-        <div class="badge"><i class="fas fa-hand-holding-usd"></i> Financiamiento sin intereses</div>
-        <div class="badge"><i class="fas fa-file-contract"></i> Habilitación urbana</div>
-        <div class="badge"><i class="fas fa-check-double"></i> Proyectos 100% ejecutados</div>
+        <div class="badge"><i class="fas fa-road"></i> Pistas y veredas</div>
+        <div class="badge"><i class="fas fa-file-contract"></i> Documentos en regla</div>
+        <div class="badge"><i class="fas fa-hand-holding-usd"></i> Sin intereses</div>
+        <div class="badge"><i class="fas fa-city"></i> Habilitación urbana completa</div>
     </div>
 </div>
 
@@ -803,95 +931,152 @@
 <section id="proyectos">
     <div class="wrap">
         <div class="s-head">
-            <span class="s-tag s-tag-mg"><i class="fas fa-map-marker-alt"></i> &nbsp;Disponibles ahora</span>
+            <span class="s-tag s-tag-mg"><i class="fas fa-city"></i> &nbsp;Proyectos de Lotización</span>
             <h2 class="s-h2">Nuestros <span style="color:var(--mg);">Proyectos</span></h2>
-            <p class="s-sub">Elige el proyecto ideal para tu familia. Todos incluyen habilitación urbana completa y financiamiento sin intereses.</p>
+            <p class="s-sub">5 proyectos residenciales disponibles en Hualhuas, Junín. Todos con habilitación urbana completa y financiamiento sin intereses.</p>
         </div>
         <div class="proj-grid">
 
-            <!-- Proyecto 1 -->
+            <!-- Residencial Aurora -->
             <div class="proj-card">
                 <div class="proj-img-wrap">
-                    <img src="{{ asset('imagenes/imagenes_website/proyecto-lotes-hualhuas-35k.jpeg') }}"
-                         alt="Lotes Hualhuas">
-                    <span class="proj-ribbon new">Nuevo Proyecto</span>
+                    <a href="{{ route('proyectos.aurora') }}" class="proj-cover-link" aria-label="Ver pagina de Residencial Aurora">
+                        <img src="{{ asset('imagenes/imagenes_website/proyecto-lotes-vista-aerea.jpeg') }}" alt="Residencial Aurora">
+                    </a>
+                    <span class="proj-ribbon new">Disponible</span>
                 </div>
                 <div class="proj-body">
                     <div class="proj-top">
-                        <h3 class="proj-name">Lotes Hualhuas</h3>
-                        <div class="proj-price-box">
-                            <div class="proj-price">S/. 35,000</div>
-                            <div class="proj-psub">desde / lote</div>
-                        </div>
+                        <h3 class="proj-name"><a href="{{ route('proyectos.aurora') }}">Residencial Aurora</a></h3>
+                        <a href="https://share.google/WUox4qK0A3NJy4E6z" target="_blank" rel="noopener" class="proj-maps-link">
+                            <i class="fas fa-map-marked-alt"></i> Ver mapa
+                        </a>
                     </div>
-                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Av. 13 de Diciembre, Hualhuas Chauca</div>
+                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
                     <div class="proj-features">
                         <span class="pf pf-agua"><i class="fas fa-tint"></i> Agua</span>
                         <span class="pf pf-luz"><i class="fas fa-bolt"></i> Luz</span>
                         <span class="pf pf-des"><i class="fas fa-soap"></i> Desagüe</span>
-                        <span class="pf pf-alum"><i class="fas fa-lightbulb"></i> Alumbrado</span>
-                        <span class="pf pf-m2"><i class="fas fa-ruler-combined"></i> 100 m²</span>
                         <span class="pf pf-fin"><i class="fas fa-hand-holding-usd"></i> Sin intereses</span>
+                        <span class="pf pf-m2"><i class="fas fa-file-contract"></i> Docs. en regla</span>
                     </div>
-                    <a href="https://wa.me/51900000000?text=Hola!%20Me%20interesa%20Lotes%20Hualhuas%20desde%20S%2F35%2C000" class="proj-btn" target="_blank">
+                    <a href="https://wa.me/51929303999?text=Hola!%20Me%20interesa%20el%20Residencial%20Aurora" class="proj-btn" target="_blank">
                         <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
                     </a>
                 </div>
             </div>
 
-            <!-- Proyecto 2 -->
+            <!-- Residencial La Colina -->
             <div class="proj-card">
                 <div class="proj-img-wrap">
-                    <img src="{{ asset('imagenes/imagenes_website/proyecto-calle-principal-50k.jpeg') }}"
-                         alt="Calle Principal Huancayo">
-                    <span class="proj-ribbon">Disponible</span>
+                    <a href="{{ route('proyectos.la-colina') }}" class="proj-cover-link" aria-label="Ver pagina de Residencial La Colina">
+                        <img src="{{ asset('imagenes/imagenes_website/proyecto-calle-principal-50k.jpeg') }}" alt="Residencial La Colina">
+                    </a>
+                    <span class="proj-ribbon new">Disponible</span>
                 </div>
                 <div class="proj-body">
                     <div class="proj-top">
-                        <h3 class="proj-name">Calle Principal</h3>
-                        <div class="proj-price-box">
-                            <div class="proj-price">S/. 50,000</div>
-                            <div class="proj-psub">por lote</div>
-                        </div>
+                        <h3 class="proj-name"><a href="{{ route('proyectos.la-colina') }}">Residencial La Colina</a></h3>
+                        <a href="https://share.google/fBLONuyz76WUgy0oy" target="_blank" rel="noopener" class="proj-maps-link">
+                            <i class="fas fa-map-marked-alt"></i> Ver mapa
+                        </a>
                     </div>
-                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Calle Huancayo, Hualhuas</div>
+                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
                     <div class="proj-features">
                         <span class="pf pf-agua"><i class="fas fa-tint"></i> Agua</span>
                         <span class="pf pf-luz"><i class="fas fa-bolt"></i> Luz</span>
                         <span class="pf pf-des"><i class="fas fa-soap"></i> Desagüe</span>
-                        <span class="pf pf-m2"><i class="fas fa-ruler-combined"></i> 100 m²</span>
                         <span class="pf pf-fin"><i class="fas fa-hand-holding-usd"></i> Sin intereses</span>
+                        <span class="pf pf-m2"><i class="fas fa-file-contract"></i> Docs. en regla</span>
                     </div>
-                    <a href="https://wa.me/51900000000?text=Hola!%20Me%20interesa%20el%20proyecto%20Calle%20Principal%20S%2F50%2C000" class="proj-btn" target="_blank">
+                    <a href="https://wa.me/51929303999?text=Hola!%20Me%20interesa%20el%20Residencial%20La%20Colina" class="proj-btn" target="_blank">
                         <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
                     </a>
                 </div>
             </div>
 
-            <!-- Proyecto 3 -->
+            <!-- Residencial Mi Hogar -->
             <div class="proj-card">
                 <div class="proj-img-wrap">
-                    <img src="{{ asset('imagenes/imagenes_website/proyecto-calle-chauca-35k.jpeg') }}"
-                         alt="Carretera Central">
-                    <span class="proj-ribbon">Disponible</span>
+                    <a href="{{ route('proyectos.mi-hogar') }}" class="proj-cover-link" aria-label="Ver pagina de Residencial Mi Hogar">
+                        <img src="{{ asset('imagenes/imagenes_website/proyecto-calle-chauca-35k.jpeg') }}" alt="Residencial Mi Hogar">
+                    </a>
+                    <span class="proj-ribbon new">Disponible</span>
                 </div>
                 <div class="proj-body">
                     <div class="proj-top">
-                        <h3 class="proj-name">Carretera Central</h3>
-                        <div class="proj-price-box">
-                            <div class="proj-price">S/. 75,000</div>
-                            <div class="proj-psub">por lote</div>
-                        </div>
+                        <h3 class="proj-name"><a href="{{ route('proyectos.mi-hogar') }}">Residencial Mi Hogar</a></h3>
+                        <a href="https://share.google/bihqrSHbjLG9KuqYb" target="_blank" rel="noopener" class="proj-maps-link">
+                            <i class="fas fa-map-marked-alt"></i> Ver mapa
+                        </a>
                     </div>
-                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Óvalo de Hualhuas, Carretera Central</div>
+                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
                     <div class="proj-features">
                         <span class="pf pf-agua"><i class="fas fa-tint"></i> Agua</span>
                         <span class="pf pf-luz"><i class="fas fa-bolt"></i> Luz</span>
                         <span class="pf pf-des"><i class="fas fa-soap"></i> Desagüe</span>
-                        <span class="pf pf-m2"><i class="fas fa-ruler-combined"></i> 100 m²</span>
                         <span class="pf pf-fin"><i class="fas fa-hand-holding-usd"></i> Sin intereses</span>
+                        <span class="pf pf-m2"><i class="fas fa-file-contract"></i> Docs. en regla</span>
                     </div>
-                    <a href="https://wa.me/51900000000?text=Hola!%20Me%20interesa%20Carretera%20Central%20S%2F75%2C000" class="proj-btn" target="_blank">
+                    <a href="https://wa.me/51929303999?text=Hola!%20Me%20interesa%20el%20Residencial%20Mi%20Hogar" class="proj-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+                    </a>
+                </div>
+            </div>
+
+            <!-- Residencial San Ignacio -->
+            <div class="proj-card">
+                <div class="proj-img-wrap">
+                    <a href="{{ route('proyectos.san-ignacio') }}" class="proj-cover-link" aria-label="Ver pagina de Residencial San Ignacio">
+                        <img src="{{ asset('imagenes/imagenes_website/proyecto-lotes-hualhuas-35k.jpeg') }}" alt="Residencial San Ignacio">
+                    </a>
+                    <span class="proj-ribbon new">Disponible</span>
+                </div>
+                <div class="proj-body">
+                    <div class="proj-top">
+                        <h3 class="proj-name"><a href="{{ route('proyectos.san-ignacio') }}">Residencial San Ignacio</a></h3>
+                        <a href="https://share.google/jlARcoaQqVfnyC3qR" target="_blank" rel="noopener" class="proj-maps-link">
+                            <i class="fas fa-map-marked-alt"></i> Ver mapa
+                        </a>
+                    </div>
+                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
+                    <div class="proj-features">
+                        <span class="pf pf-agua"><i class="fas fa-tint"></i> Agua</span>
+                        <span class="pf pf-luz"><i class="fas fa-bolt"></i> Luz</span>
+                        <span class="pf pf-des"><i class="fas fa-soap"></i> Desagüe</span>
+                        <span class="pf pf-fin"><i class="fas fa-hand-holding-usd"></i> Sin intereses</span>
+                        <span class="pf pf-m2"><i class="fas fa-file-contract"></i> Docs. en regla</span>
+                    </div>
+                    <a href="https://wa.me/51929303999?text=Hola!%20Me%20interesa%20el%20Residencial%20San%20Ignacio" class="proj-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+                    </a>
+                </div>
+            </div>
+
+            <!-- Residencial Victor Campos -->
+            <div class="proj-card">
+                <div class="proj-img-wrap">
+                    <a href="{{ route('proyectos.victor-campos') }}" class="proj-cover-link" aria-label="Ver pagina de Residencial Victor Campos">
+                        <img src="{{ asset('imagenes/imagenes_website/proyecto-carretera-central-75k.jpeg') }}" alt="Residencial Victor Campos">
+                    </a>
+                    <span class="proj-ribbon new">Disponible</span>
+                </div>
+                <div class="proj-body">
+                    <div class="proj-top">
+                        <h3 class="proj-name"><a href="{{ route('proyectos.victor-campos') }}">Residencial Victor Campos</a></h3>
+                        <a href="https://share.google/lFcRRIYcJ7vsVtgM7" target="_blank" rel="noopener" class="proj-maps-link">
+                            <i class="fas fa-map-marked-alt"></i> Ver mapa
+                        </a>
+                    </div>
+                    <div class="proj-loc"><i class="fas fa-map-marker-alt"></i> Hualhuas, Junín</div>
+                    <div class="proj-features">
+                        <span class="pf pf-agua"><i class="fas fa-tint"></i> Agua</span>
+                        <span class="pf pf-luz"><i class="fas fa-bolt"></i> Luz</span>
+                        <span class="pf pf-des"><i class="fas fa-soap"></i> Desagüe</span>
+                        <span class="pf pf-fin"><i class="fas fa-hand-holding-usd"></i> Sin intereses</span>
+                        <span class="pf pf-m2"><i class="fas fa-file-contract"></i> Docs. en regla</span>
+                    </div>
+                    <a href="https://wa.me/51929303999?text=Hola!%20Me%20interesa%20el%20Residencial%20Victor%20Campos" class="proj-btn" target="_blank">
                         <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
                     </a>
                 </div>
@@ -1066,8 +1251,26 @@
                 </div>
             </div>
             <div class="testi-photo">
-                <img src="{{ asset('imagenes/imagenes_website/testimonio-familia-vitman.jpeg') }}"
-                     alt="Familia Vitman - clientes felices">
+                <div class="testi-slider" id="testiSlider">
+                    <div class="testi-slides" id="testiSlides">
+                        <div class="testi-slide">
+                            <img src="{{ asset('imagenes/imagenes_testimonios/FB_IMG_1773886217168.jpg.jpeg') }}" alt="Familia feliz - testimonio 1">
+                        </div>
+                        <div class="testi-slide">
+                            <img src="{{ asset('imagenes/imagenes_testimonios/FB_IMG_1773886311999.jpg.jpeg') }}" alt="Familia feliz - testimonio 2">
+                        </div>
+                        <div class="testi-slide">
+                            <img src="{{ asset('imagenes/imagenes_testimonios/587221346_17978880260934070_4177784834347007168_n.jpg') }}" alt="Familia feliz - testimonio 3">
+                        </div>
+                    </div>
+                    <button class="testi-prev" id="testiPrev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="testi-next" id="testiNext"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="testi-dots" id="testiDots">
+                    <button class="testi-dot active"></button>
+                    <button class="testi-dot"></button>
+                    <button class="testi-dot"></button>
+                </div>
                 <div class="testi-float-badge">
                     <div class="tfb-num">252+</div>
                     <div class="tfb-txt">Familias<br>Felices</div>
@@ -1082,58 +1285,64 @@
     <div class="wrap">
         <div class="s-head center">
             <span class="s-tag s-tag-vt"><i class="fas fa-map-marker-alt"></i> &nbsp;Ubicación</span>
-            <h2 class="s-h2">¿Cómo <span style="color:var(--mg);">llegar</span>?</h2>
-            <p class="s-sub">Fácil acceso desde Huancayo. Nuestros proyectos están en zonas estratégicas de Hualhuas, Junín.</p>
+            <h2 class="s-h2">¿Cómo llegar <span style="color:var(--mg);">a nosotros</span>?</h2>
+            <p class="s-sub">Encuéntranos en nuestras dos oficinas en Huancayo y Las Lomas. ¡Te esperamos!</p>
         </div>
 
-        <!-- Mapas en fila -->
+        <!-- Mapas de oficinas -->
         <div class="ubic-maps-row">
-            <div class="ubic-map-card">
-                <img src="{{ asset('imagenes/imagenes_website/mapa-llegar.jpeg') }}" alt="Cómo llegar a tu lote">
+            <a href="https://share.google/SwKCjCbZ5zViCTQfv" target="_blank" rel="noopener" class="ubic-map-card">
+                <img src="{{ asset('imagenes/imagenes_website/mapa-llegar.jpeg') }}" alt="Oficina 28 de Julio">
                 <div class="ubic-map-label">
-                    <span><i class="fas fa-route"></i> Cómo llegar a tu lote</span>
+                    <span><i class="fas fa-building"></i> Oficina 28 de Julio</span>
                 </div>
                 <div class="ubic-map-badge">
-                    <i class="fas fa-map-marker-alt"></i> Carretera Central → Jirón Los Guindales → Tu Lote
+                    <i class="fas fa-map-marker-alt"></i> Jr. 28 de Julio N° 495, Huancayo
                 </div>
-            </div>
-            <div class="ubic-map-card">
-                <img src="{{ asset('imagenes/imagenes_website/mapa-hualhuas.jpeg') }}" alt="Nuevo Proyecto Hualhuas">
+                <div class="ubic-map-btn">
+                    <i class="fas fa-directions"></i> Ver en Google Maps
+                </div>
+            </a>
+            <a href="https://share.google/4SAjkfTclain1xLeI" target="_blank" rel="noopener" class="ubic-map-card">
+                <img src="{{ asset('imagenes/imagenes_website/mapa-hualhuas.jpeg') }}" alt="Oficina Las Lomas">
                 <div class="ubic-map-label">
-                    <span><i class="fas fa-map"></i> Nuevo Proyecto — Hualhuas</span>
+                    <span><i class="fas fa-building"></i> Oficina Las Lomas</span>
                 </div>
                 <div class="ubic-map-badge">
-                    <i class="fas fa-map-marker-alt"></i> Av. 13 de Diciembre · Ref: Parque de Chauca
+                    <i class="fas fa-map-marker-alt"></i> Las Lomas, Huancayo, Junín
                 </div>
-            </div>
+                <div class="ubic-map-btn">
+                    <i class="fas fa-directions"></i> Ver en Google Maps
+                </div>
+            </a>
         </div>
 
         <!-- Tarjetas de info -->
         <div class="ubic-cards-row">
             <div class="ubic-card">
                 <div class="ubic-ic"><i class="fas fa-building"></i></div>
-                <div class="ubic-t">Oficina Principal</div>
+                <div class="ubic-t">Oficina 28 de Julio</div>
                 <div class="ubic-v">Jr. 28 de Julio N° 495<br>Huancayo, Junín</div>
             </div>
             <div class="ubic-card">
-                <div class="ubic-ic"><i class="fas fa-map-pin"></i></div>
-                <div class="ubic-t">Lotes Hualhuas</div>
-                <div class="ubic-v">Av. 13 de Diciembre con Calle sin Nombre, Hualhuas Chauca</div>
+                <div class="ubic-ic"><i class="fas fa-building"></i></div>
+                <div class="ubic-t">Oficina Las Lomas</div>
+                <div class="ubic-v">Las Lomas<br>Huancayo, Junín</div>
             </div>
             <div class="ubic-card">
-                <div class="ubic-ic"><i class="fas fa-map-pin"></i></div>
-                <div class="ubic-t">Calle Principal</div>
-                <div class="ubic-v">Calle Alfonso Ugarte y 13 de Diciembre, Hualhuas Chauca</div>
+                <div class="ubic-ic"><i class="fas fa-clock"></i></div>
+                <div class="ubic-t">Horario de Atención</div>
+                <div class="ubic-v">Lun – Sáb<br>9:00 am – 6:00 pm</div>
             </div>
             <div class="ubic-card">
-                <div class="ubic-ic"><i class="fas fa-map-pin"></i></div>
-                <div class="ubic-t">Carretera Central</div>
-                <div class="ubic-v">Carretera Central, Óvalo de Hualhuas — acceso directo</div>
+                <div class="ubic-ic"><i class="fas fa-phone-alt"></i></div>
+                <div class="ubic-t">Llámanos</div>
+                <div class="ubic-v">+51 999 999 999<br>Atención inmediata</div>
             </div>
             <div class="ubic-card">
-                <div class="ubic-ic"><i class="fas fa-bus"></i></div>
-                <div class="ubic-t">En Combi</div>
-                <div class="ubic-v">Paradero Combis de Hualhuas, Av. 13 de Diciembre. Ref: Parque de Chauca</div>
+                <div class="ubic-ic"><i class="fab fa-whatsapp"></i></div>
+                <div class="ubic-t">WhatsApp</div>
+                <div class="ubic-v">Escríbenos ahora<br>y te respondemos</div>
             </div>
         </div>
     </div>
@@ -1144,37 +1353,39 @@
     <div class="wrap">
         <div style="position:relative;z-index:1;text-align:center;">
             <span class="s-tag s-tag-wh" style="margin-bottom:16px;display:inline-flex;">
-                <i class="fas fa-headset"></i> &nbsp;Estamos para ayudarte
+                <i class="fas fa-calendar-check"></i> &nbsp;Visita sin compromiso
             </span>
             <h2 class="s-h2" style="color:#fff;margin-bottom:14px;">
-                ¿Listo para dar el<br><span style="background:linear-gradient(90deg,var(--mg),#ff88ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">gran paso</span>?
+                Agenda tu visita<br><span style="background:linear-gradient(90deg,var(--mg),#ff88ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">gratuita hoy</span>
             </h2>
-            <p class="s-sub" style="color:rgba(255,255,255,.55);margin:0 auto 40px;">
-                Contáctanos ahora. Un asesor te atenderá personalmente y te guiará en todo el proceso de adquisición.
+            <p class="s-sub" style="color:rgba(255,255,255,.55);margin:0 auto 48px;">
+                Ven a conocer tu futuro lote en persona. Un asesor te acompañará y resolverá todas tus dudas sin presión.
             </p>
-            <div class="cta-contacts">
-                <a href="https://wa.me/51900000000" class="cta-c" target="_blank">
-                    <i class="fab fa-whatsapp" style="color:#25D366;"></i>
-                    <div class="cc-t">WhatsApp</div>
-                    <div class="cc-v">Escríbenos ahora</div>
-                </a>
-                <a href="tel:+51900000000" class="cta-c">
-                    <i class="fas fa-phone-alt" style="color:rgba(238,0,187,.8);"></i>
-                    <div class="cc-t">Llámanos</div>
-                    <div class="cc-v">+51 900 000 000</div>
-                </a>
-                <a href="https://www.facebook.com/" class="cta-c" target="_blank">
-                    <i class="fab fa-facebook" style="color:#1877F2;"></i>
-                    <div class="cc-t">Facebook</div>
-                    <div class="cc-v">Beatriz Campos Inmob.</div>
-                </a>
+            <div class="cta-garantias">
+                <div class="cta-g">
+                    <div class="cta-g-ic"><i class="fas fa-shield-alt"></i></div>
+                    <div class="cta-g-t">Sin compromiso</div>
+                    <div class="cta-g-v">Visita el lote, pregunta todo y decide con calma.</div>
+                </div>
+                <div class="cta-g">
+                    <div class="cta-g-ic"><i class="fas fa-bolt"></i></div>
+                    <div class="cta-g-t">Atención inmediata</div>
+                    <div class="cta-g-v">Te respondemos en minutos por WhatsApp.</div>
+                </div>
+                <div class="cta-g">
+                    <div class="cta-g-ic"><i class="fas fa-file-contract"></i></div>
+                    <div class="cta-g-t">Todo en regla</div>
+                    <div class="cta-g-v">Documentos, habilitación y financiamiento listos.</div>
+                </div>
+                <div class="cta-g">
+                    <div class="cta-g-ic"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="cta-g-t">Financiamiento 0%</div>
+                    <div class="cta-g-v">Cuotas cómodas, sin intereses ni letra chica.</div>
+                </div>
             </div>
             <div class="cta-btns">
-                <a href="https://wa.me/51900000000?text=Hola!%20Quiero%20informaci%C3%B3n%20sobre%20los%20lotes%20disponibles" class="btn-wa-big" target="_blank">
-                    <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
-                </a>
-                <a href="{{ url('/acceso') }}" class="btn-acc">
-                    <i class="fas fa-sign-in-alt"></i> Acceso al Sistema
+                <a href="https://wa.me/51929303999?text=Hola!%20Quiero%20agendar%20una%20visita%20gratuita%20al%20lote" class="btn-wa-big" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Agendar visita gratis
                 </a>
             </div>
         </div>
@@ -1234,6 +1445,10 @@
 
 <!-- REDES SOCIALES FLOTANTES -->
 <div class="float-social">
+    <a href="https://www.facebook.com/inmobiliariahualhuas?rdid=UGcfUsSkPb4Emhj1&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1K4uyqzN6z%2F#" target="_blank" class="fs-ball fb">
+        <i class="fab fa-facebook-f"></i>
+        <span class="fs-tooltip">Facebook</span>
+    </a>
     <a href="https://wa.me/51900000000?text=Hola!%20Quiero%20informaci%C3%B3n%20sobre%20los%20lotes" target="_blank" class="fs-ball wa">
         <i class="fab fa-whatsapp"></i>
         <span class="fs-tooltip">WhatsApp</span>
@@ -1299,6 +1514,28 @@
         el.style.transition = `opacity .5s ${(i%4)*.1}s, transform .5s ${(i%4)*.1}s`;
         obs.observe(el);
     });
+
+    // carrusel testimonios
+    (function(){
+        const slides = document.getElementById('testiSlides');
+        const dots   = document.querySelectorAll('#testiDots .testi-dot');
+        let current  = 0;
+        const total  = dots.length;
+
+        function goTo(n){
+            current = (n + total) % total;
+            slides.style.transform = `translateX(-${current * 100}%)`;
+            dots.forEach((d,i) => d.classList.toggle('active', i === current));
+        }
+
+        document.getElementById('testiPrev').addEventListener('click', () => goTo(current - 1));
+        document.getElementById('testiNext').addEventListener('click', () => goTo(current + 1));
+        dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+        // auto-play cada 4 segundos
+        setInterval(() => goTo(current + 1), 4000);
+    })();
+
 </script>
 </body>
 </html>

@@ -19,6 +19,14 @@ Route::get('/cliente', function () {
     return view('welcome');
 });
 
+Route::prefix('proyectos')->name('proyectos.')->group(function () {
+    Route::view('/residencial-aurora', 'proyectos.aurora')->name('aurora');
+    Route::view('/residencial-la-colina', 'proyectos.la-colina')->name('la-colina');
+    Route::view('/residencial-mi-hogar', 'proyectos.mi-hogar')->name('mi-hogar');
+    Route::view('/residencial-san-ignacio', 'proyectos.san-ignacio')->name('san-ignacio');
+    Route::view('/residencial-victor-campos', 'proyectos.victor-campos')->name('victor-campos');
+});
+
 // ============================================================
 // PANEL ADMINISTRADOR
 // ============================================================
