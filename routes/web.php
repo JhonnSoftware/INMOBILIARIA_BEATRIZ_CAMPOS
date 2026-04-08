@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\ProyectoLoteController;
 use App\Http\Controllers\Admin\ProyectoClienteController;
 use App\Http\Controllers\Admin\ProyectoCobranzaController;
+use App\Http\Controllers\Admin\ProyectoEgresoController;
+use App\Http\Controllers\Admin\ProyectoIngresoController;
 use App\Http\Controllers\ClienteController as ProyectoClienteSupportController;
 use App\Http\Controllers\ProyectoController;
 use Illuminate\Support\Facades\Route;
@@ -66,5 +68,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/cobranza/pagos/{pago}', [ProyectoCobranzaController::class, 'destroyPago'])->name('cobranza.pagos.destroy');
             Route::get('/cobranza/clientes/{cliente}/cronograma', [ProyectoCobranzaController::class, 'verCronograma'])->name('cobranza.cronograma');
             Route::post('/cobranza/clientes/{cliente}/cronograma/regenerar', [ProyectoCobranzaController::class, 'regenerarCronograma'])->name('cobranza.cronograma.regenerar');
+
+            Route::get('/ingresos', [ProyectoIngresoController::class, 'index'])->name('ingresos');
+            Route::get('/ingresos/create', [ProyectoIngresoController::class, 'create'])->name('ingresos.create');
+            Route::post('/ingresos', [ProyectoIngresoController::class, 'store'])->name('ingresos.store');
+            Route::get('/ingresos/{ingreso}/edit', [ProyectoIngresoController::class, 'edit'])->name('ingresos.edit');
+            Route::put('/ingresos/{ingreso}', [ProyectoIngresoController::class, 'update'])->name('ingresos.update');
+            Route::delete('/ingresos/{ingreso}', [ProyectoIngresoController::class, 'destroy'])->name('ingresos.destroy');
+
+            Route::get('/egresos', [ProyectoEgresoController::class, 'index'])->name('egresos');
+            Route::get('/egresos/create', [ProyectoEgresoController::class, 'create'])->name('egresos.create');
+            Route::post('/egresos', [ProyectoEgresoController::class, 'store'])->name('egresos.store');
+            Route::get('/egresos/{egreso}/edit', [ProyectoEgresoController::class, 'edit'])->name('egresos.edit');
+            Route::put('/egresos/{egreso}', [ProyectoEgresoController::class, 'update'])->name('egresos.update');
+            Route::delete('/egresos/{egreso}', [ProyectoEgresoController::class, 'destroy'])->name('egresos.destroy');
+            Route::delete('/egresos/{egreso}/archivos/{archivo}', [ProyectoEgresoController::class, 'destroyArchivo'])->name('egresos.archivos.destroy');
         });
 });

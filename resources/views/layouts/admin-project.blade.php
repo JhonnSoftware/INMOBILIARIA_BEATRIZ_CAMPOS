@@ -122,8 +122,8 @@
         <a href="{{ route('admin.proyectos.lotes', $proyecto) }}" class="nav-link {{ ($currentModule ?? '') === 'lotes' ? 'active' : '' }}"><i class="fas fa-map"></i> Lotes</a>
         <a href="{{ route('admin.proyectos.clientes', $proyecto) }}" class="nav-link {{ ($currentModule ?? '') === 'clientes' ? 'active' : '' }}"><i class="fas fa-users"></i> Clientes</a>
         <a href="{{ route('admin.proyectos.cobranza', $proyecto) }}" class="nav-link {{ ($currentModule ?? '') === 'cobranza' ? 'active' : '' }}"><i class="fas fa-hand-holding-usd"></i> Cobranza</a>
-        <span class="nav-link disabled"><i class="fas fa-chart-pie"></i> Ingreso</span>
-        <span class="nav-link disabled"><i class="fas fa-receipt"></i> Egreso</span>
+        <a href="{{ route('admin.proyectos.ingresos', $proyecto) }}" class="nav-link {{ ($currentModule ?? '') === 'ingresos' ? 'active' : '' }}"><i class="fas fa-chart-pie"></i> Ingresos</a>
+        <a href="{{ route('admin.proyectos.egresos', $proyecto) }}" class="nav-link {{ ($currentModule ?? '') === 'egresos' ? 'active' : '' }}"><i class="fas fa-receipt"></i> Egresos</a>
         <span class="nav-link disabled"><i class="fas fa-cash-register"></i> Caja</span>
         <span class="nav-link disabled"><i class="fas fa-file-alt"></i> Documentos</span>
     </div>

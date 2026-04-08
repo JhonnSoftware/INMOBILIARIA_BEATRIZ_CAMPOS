@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Schema;
 
 class Pago extends Model
 {
@@ -51,6 +53,42 @@ class Pago extends Model
         'numero_cuotas' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (Pago $pago) {
+            if (! Schema::hasTable('ingresos')) {
+                return;
+            }
+
+            $pago->loadMissing(['cliente', 'lote', 'ingreso']);
+
+            if ($pago->shouldGenerateIngreso()) {
+                Ingreso::query()->updateOrCreate(
+                    ['pago_id' => $pago->id],
+                    [
+                        'proyecto_id' => $pago->proyecto_id,
+                        'cliente_id' => $pago->cliente_id,
+                        'lote_id' => $pago->lote_id,
+                        'fecha_ingreso' => $pago->fecha_pago,
+                        'concepto' => $pago->buildIngresoConcept(),
+                        'tipo_ingreso' => $pago->mapIngresoType(),
+                        'origen' => 'cobranza',
+                        'monto' => round((float) $pago->monto, 2),
+                        'moneda' => 'PEN',
+                        'descripcion' => $pago->notas,
+                        'observaciones' => 'Generado automaticamente desde cobranza por el pago #' . $pago->id . '.',
+                        'estado' => 'registrado',
+                        'registrado_por' => $pago->registrado_por,
+                    ]
+                );
+
+                return;
+            }
+
+            $pago->cancelIngreso('Ingreso automatico anulado porque el pago ya no representa una entrada de efectivo.');
+        });
+    }
+
     public function contrato(): BelongsTo
     {
         return $this->belongsTo(Contrato::class, 'contrato_id');
@@ -74,5 +112,55 @@ class Pago extends Model
     public function cronogramaPagos(): HasMany
     {
         return $this->hasMany(CronogramaPago::class, 'pago_id');
+    }
+
+    public function ingreso(): HasOne
+    {
+        return $this->hasOne(Ingreso::class, 'pago_id');
+    }
+
+    public function shouldGenerateIngreso(): bool
+    {
+        return $this->estado_pago === 'registrado'
+            && in_array($this->tipo_pago, ['reserva', 'inicial', 'cuota', 'contado'], true);
+    }
+
+    public function cancelIngreso(string $message): void
+    {
+        if (! $this->ingreso) {
+            return;
+        }
+
+        $notes = trim((string) $this->ingreso->observaciones);
+
+        $this->ingreso->update([
+            'estado' => 'anulado',
+            'observaciones' => trim($notes !== '' ? $notes . PHP_EOL . $message : $message),
+        ]);
+    }
+
+    protected function mapIngresoType(): string
+    {
+        return match ($this->tipo_pago) {
+            'reserva' => 'reserva',
+            'inicial' => 'cuota_inicial',
+            'contado' => 'contado',
+            default => 'cobranza',
+        };
+    }
+
+    protected function buildIngresoConcept(): string
+    {
+        $label = match ($this->tipo_pago) {
+            'reserva' => 'Reserva',
+            'inicial' => 'Cuota inicial',
+            'contado' => 'Pago al contado',
+            default => 'Cobranza',
+        };
+
+        $cliente = $this->cliente?->nombre_completo ?: 'Cliente';
+        $lote = $this->lote ? ' - Mz. ' . $this->lote->manzana . ' Lt. ' . $this->lote->numero : '';
+
+        return $label . ' - ' . $cliente . $lote;
     }
 }

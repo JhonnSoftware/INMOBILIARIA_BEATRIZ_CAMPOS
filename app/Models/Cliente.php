@@ -86,6 +86,11 @@ class Cliente extends Model
         return $this->hasMany(Pago::class, 'cliente_id')->orderByDesc('fecha_pago')->orderByDesc('id');
     }
 
+    public function ingresos(): HasMany
+    {
+        return $this->hasMany(Ingreso::class, 'cliente_id')->orderByDesc('fecha_ingreso')->orderByDesc('id');
+    }
+
     public function cronogramaPagos(): HasMany
     {
         return $this->hasMany(CronogramaPago::class, 'cliente_id')
