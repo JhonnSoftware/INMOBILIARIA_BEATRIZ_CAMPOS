@@ -11,10 +11,12 @@
       "Bash(sed -i 's|href=\"\"/cliente\"\"|href=\"\"{{ url\\('\"''\"'/cliente'\"''\"'\\) }}\"\"|g' resources/views/welcome.blade.php)",
       "Bash(sed -i 's|href=\"\"/admin\"\"|href=\"\"{{ url\\('\"''\"'/admin'\"''\"'\\) }}\"\"|g' resources/views/welcome.blade.php)",
       "Bash(sed -i 's|href=\"\"/\"\"|href=\"\"{{ url\\('\"''\"'/'\"''\"'\\) }}\"\"|g' resources/views/welcome.blade.php)",
-      "Bash(php -r \":*)"
+      "Bash(php -r \":*)",
+      "Read(//c/xampp/htdocs/cetecop/**)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\user\\.claude\\projects\\c--xampp-htdocs-BC-ibmobiliaria"
+      "C:\\Users\\user\\.claude\\projects\\c--xampp-htdocs-BC-ibmobiliaria",
+      "c:\\xampp\\htdocs\\cetecop\\resources\\views\\programas"
     ]
   }
 }

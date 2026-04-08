@@ -266,9 +266,92 @@
             color:#fff;padding:12px 24px;border-radius:50px;
             font-size:13px;font-weight:700;text-decoration:none;
             box-shadow:0 8px 24px rgba(238,0,187,.4);transition:.3s;
-            position:relative;z-index:1;
+            position:relative;z-index:1;border:none;cursor:pointer;
         }
         .banner-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(238,0,187,.5);}
+
+        .flash{
+            display:flex;align-items:center;gap:10px;
+            padding:14px 18px;border-radius:16px;
+            margin-bottom:18px;font-size:13px;font-weight:600;
+            border:1px solid transparent;
+        }
+        .flash.success{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
+        .flash.error{background:#fff1f2;color:#be123c;border-color:#fecdd3;}
+
+        .modal-overlay{
+            position:fixed;inset:0;z-index:1200;
+            background:rgba(26,26,46,.55);
+            backdrop-filter:blur(4px);
+            display:none;align-items:center;justify-content:center;
+            padding:18px;
+        }
+        .modal-overlay.open{display:flex;}
+        .modal-card{
+            width:min(100%, 480px);
+            background:#fff;border-radius:24px;
+            border:1px solid var(--border);
+            box-shadow:0 24px 64px rgba(15,23,42,.22);
+            overflow:hidden;
+        }
+        .modal-head{
+            padding:22px 24px 14px;
+            display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+        }
+        .modal-title{
+            font-size:20px;font-weight:800;color:var(--text);line-height:1.2;
+        }
+        .modal-title span{color:var(--mg);}
+        .modal-subtitle{
+            margin-top:6px;font-size:12.5px;color:var(--gray);line-height:1.6;
+        }
+        .modal-close{
+            width:38px;height:38px;border-radius:12px;
+            border:1px solid var(--border);background:var(--bg);
+            color:var(--gray);cursor:pointer;transition:.2s;font-size:14px;
+        }
+        .modal-close:hover{background:#fff;color:var(--text);border-color:rgba(238,0,187,.3);}
+        .modal-body{padding:0 24px 22px;}
+        .form-label{
+            display:block;margin-bottom:8px;
+            font-size:12px;font-weight:700;color:var(--text);
+            text-transform:uppercase;letter-spacing:.7px;
+        }
+        .form-label span{color:var(--mg);}
+        .form-control{
+            width:100%;border:1.5px solid var(--border);
+            background:var(--bg);border-radius:14px;
+            padding:14px 16px;font:500 14px 'Poppins',sans-serif;color:var(--text);
+            outline:none;transition:.2s;
+        }
+        .form-control:focus{
+            border-color:rgba(238,0,187,.45);
+            background:#fff;box-shadow:0 0 0 4px rgba(238,0,187,.08);
+        }
+        .field-error{
+            margin-top:8px;font-size:12px;font-weight:600;color:#be123c;
+        }
+        .modal-note{
+            margin-top:14px;padding:12px 14px;border-radius:14px;
+            background:linear-gradient(135deg,rgba(85,51,204,.08),rgba(238,0,187,.08));
+            color:var(--gray);font-size:12.5px;line-height:1.6;
+        }
+        .modal-actions{
+            margin-top:18px;display:flex;justify-content:flex-end;gap:10px;
+        }
+        .btn-secondary{
+            border:1.5px solid var(--border);background:#fff;color:var(--gray);
+            padding:11px 18px;border-radius:14px;
+            font:600 13px 'Poppins',sans-serif;cursor:pointer;transition:.2s;
+        }
+        .btn-secondary:hover{border-color:rgba(85,51,204,.3);color:var(--vt);}
+        .btn-primary{
+            border:none;background:linear-gradient(135deg,var(--mg),var(--vt));
+            color:#fff;padding:11px 20px;border-radius:14px;
+            font:700 13px 'Poppins',sans-serif;cursor:pointer;transition:.2s;
+            box-shadow:0 10px 24px rgba(85,51,204,.22);
+        }
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(85,51,204,.28);}
 
         /* stat cards */
         .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px;}
@@ -435,7 +518,7 @@
         <div class="sb-section">
             <div class="sb-section-title">Proyectos</div>
             @foreach($proyectos as $proyecto)
-            <a href="{{ url('/admin/proyectos/' . $proyecto->id) }}" class="sb-link">
+            <a href="{{ route('admin.proyectos.show', $proyecto) }}" class="sb-link">
                 <div class="sb-icon"><i class="fas fa-home"></i></div>
                 <span>{{ $proyecto->nombre }}</span>
                 @if($proyecto->precio_base)
@@ -638,16 +721,29 @@
 
     <!-- CONTENT -->
     <main class="content">
+        @if(session('success'))
+        <div class="flash success">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
 
+        @if($errors->any())
+        <div class="flash error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ $errors->first() }}</span>
+        </div>
+        @endif
+ 
         <!-- Banner bienvenida -->
         <div class="banner">
             <div class="banner-text">
                 <h2>Bienvenido al <em>Panel de Gestión</em></h2>
                 <p>Administra todos los proyectos, clientes y contratos de Beatriz Campos Inmobiliaria desde un solo lugar.</p>
             </div>
-            <a href="#" class="banner-btn">
+            <button type="button" class="banner-btn" onclick="openNuevoProyectoModal()">
                 <i class="fas fa-plus"></i> Nuevo Proyecto
-            </a>
+            </button>
         </div>
 
         <!-- Stats -->
@@ -655,7 +751,7 @@
             <div class="stat-card">
                 <div class="stat-icon si-mg"><i class="fas fa-building"></i></div>
                 <div class="stat-info">
-                    <div class="stat-num">3</div>
+                    <div class="stat-num">{{ $proyectos->where('estado', 'activo')->count() }}</div>
                     <div class="stat-lbl">Proyectos Activos</div>
                 </div>
             </div>
@@ -707,7 +803,7 @@
                     <div class="pt-price">S/. {{ number_format($proyecto->precio_base, 0, '.', ',') }}</div>
                     <div class="pt-cell">{{ $proyecto->lotes_count ?? 0 }} lotes</div>
                     <div><span class="pt-badge {{ $proyecto->estado === 'activo' ? 'pb-active' : 'pb-new' }}"><i class="fas fa-circle" style="font-size:7px;"></i> {{ ucfirst($proyecto->estado) }}</span></div>
-                    <div><a href="{{ url('/admin/proyectos/' . $proyecto->id) }}" class="pt-btn"><i class="fas fa-eye"></i> Ver</a></div>
+                    <div><a href="{{ route('admin.proyectos.show', $proyecto) }}" class="pt-btn"><i class="fas fa-eye"></i> Ver</a></div>
                 </div>
                 @endforeach
             @else
@@ -793,7 +889,73 @@
     </main>
 </div>
 
+<div class="modal-overlay{{ $errors->has('nombre') ? ' open' : '' }}" id="nuevoProyectoModal">
+    <div class="modal-card">
+        <div class="modal-head">
+            <div>
+                <div class="modal-title">Crear <span>Nuevo Proyecto</span></div>
+                <div class="modal-subtitle">Ingresa el nombre del proyecto. El sistema generará automáticamente su panel y los módulos base.</div>
+            </div>
+            <button type="button" class="modal-close" onclick="closeNuevoProyectoModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="{{ route('admin.proyectos.store') }}" id="nuevoProyectoForm">
+                @csrf
+                <label for="nuevoProyectoNombre" class="form-label">Nombre del proyecto <span>*</span></label>
+                <input
+                    type="text"
+                    id="nuevoProyectoNombre"
+                    name="nombre"
+                    class="form-control"
+                    placeholder="Ej: Residencial Las Lomas"
+                    value="{{ old('nombre') }}"
+                    maxlength="150"
+                    required
+                >
+                @error('nombre')
+                <div class="field-error">{{ $message }}</div>
+                @enderror
+
+                <div class="modal-note">
+                    Se crearán automáticamente el código, slug, panel del proyecto y la estructura base para lotes, clientes, cobranza, ingresos, egresos, caja y documentos.
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeNuevoProyectoModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Crear proyecto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+    const nuevoProyectoModal = document.getElementById('nuevoProyectoModal');
+    const nuevoProyectoNombre = document.getElementById('nuevoProyectoNombre');
+
+    function openNuevoProyectoModal() {
+        nuevoProyectoModal.classList.add('open');
+        setTimeout(() => nuevoProyectoNombre.focus(), 40);
+    }
+
+    function closeNuevoProyectoModal() {
+        nuevoProyectoModal.classList.remove('open');
+    }
+
+    nuevoProyectoModal.addEventListener('click', (event) => {
+        if (event.target === nuevoProyectoModal) {
+            closeNuevoProyectoModal();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeNuevoProyectoModal();
+        }
+    });
+
     // Fecha en vivo
     function updateDate(){
         const d = new Date();
@@ -814,9 +976,9 @@
         if(window.innerWidth <= 768 &&
            !sidebar.contains(e.target) &&
            !sbToggle.contains(e.target)){
-            sidebar.classList.remove('open');
-        }
-    });
+             sidebar.classList.remove('open');
+         }
+     });
 </script>
 </body>
 </html>

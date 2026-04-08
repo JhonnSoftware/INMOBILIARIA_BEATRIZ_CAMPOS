@@ -217,7 +217,7 @@
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar">
-    <a href="{{ url('/admin') }}" class="nav-brand">
+    <a href="{{ route('admin.dashboard') }}" class="nav-brand">
         <div class="nav-logo">
             <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="BC">
         </div>
@@ -228,13 +228,13 @@
     </a>
 
     <div class="nav-links">
-        <a href="{{ url('/admin') }}" class="nav-link">
+        <a href="{{ route('admin.dashboard') }}" class="nav-link">
             <i class="fas fa-th-large"></i> Dashboard
         </a>
-        <a href="{{ url('/admin/proyectos/' . $proyecto->id) }}" class="nav-link">
+        <a href="{{ route('admin.proyectos.show', $proyecto) }}" class="nav-link">
             <i class="fas fa-map"></i> Lotes
         </a>
-        <a href="{{ url('/admin/proyectos/' . $proyecto->id . '/clientes') }}" class="nav-link active">
+        <a href="{{ route('admin.proyectos.clientes', $proyecto) }}" class="nav-link active">
             <i class="fas fa-users"></i> Clientes
         </a>
         <a href="#" class="nav-link">
@@ -255,7 +255,7 @@
     </div>
 
     <div class="nav-right">
-        <a href="{{ url('/admin/proyectos/' . $proyecto->id) }}" class="nav-back">
+        <a href="{{ route('admin.proyectos.show', $proyecto) }}" class="nav-back">
             <i class="fas fa-arrow-left"></i> Volver
         </a>
     </div>
@@ -276,9 +276,9 @@
     <div class="page-header">
         <div class="ph-left">
             <div class="ph-breadcrumb">
-                <a href="{{ url('/admin') }}">Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 <span class="sep">›</span>
-                <a href="{{ url('/admin/proyectos/' . $proyecto->id) }}">{{ $proyecto->nombre }}</a>
+                <a href="{{ route('admin.proyectos.show', $proyecto) }}">{{ $proyecto->nombre }}</a>
                 <span class="sep">›</span>
                 <span class="current">Clientes</span>
             </div>
@@ -441,7 +441,7 @@
             <button class="modal-close" onclick="cerrarModal('modalCliente')"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <form id="formCliente" method="POST" action="{{ url('/admin/proyectos/' . $proyecto->id . '/clientes') }}">
+            <form id="formCliente" method="POST" action="{{ route('admin.proyectos.clientes.store', $proyecto) }}">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
                 <div class="form-grid">
@@ -580,7 +580,7 @@
 
 <script>
 const CSRF   = document.querySelector('meta[name="csrf-token"]').content;
-const BASE   = '{{ url("/admin/proyectos/" . $proyecto->id) }}';
+const BASE   = @json(route('admin.proyectos.show', $proyecto));
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 function abrirModal(id){ document.getElementById(id).classList.add('open'); }

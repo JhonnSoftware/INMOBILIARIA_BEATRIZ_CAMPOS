@@ -45,7 +45,7 @@ class LoteController extends Controller
     /**
      * Actualizar el estado de un lote (AJAX).
      */
-    public function updateEstado(Request $request, Lote $lote)
+    public function updateEstado(Request $request, Proyecto $proyecto, Lote $lote)
     {
         $request->validate([
             'estado' => 'required|in:libre,reservado,financiamiento,vendido',
@@ -54,7 +54,6 @@ class LoteController extends Controller
         $lote->update(['estado' => $request->estado]);
 
         // Recalcular estadísticas del proyecto
-        $proyecto    = $lote->proyecto;
         $todosLotes  = $proyecto->lotes;
 
         $estadisticas = [

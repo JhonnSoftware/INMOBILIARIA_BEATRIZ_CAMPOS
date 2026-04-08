@@ -191,12 +191,24 @@
 
         /* mini stats en hero */
         .hero-stats{
-            display:flex;gap:28px;position:relative;z-index:1;
-            border-top:1px solid rgba(255,255,255,.08);padding-top:32px;
+            display:flex;gap:10px;position:relative;z-index:1;
+            padding-top:28px;
         }
-        .hs-item{display:flex;flex-direction:column;gap:3px;}
-        .hs-num{font-size:28px;font-weight:900;color:var(--mg);line-height:1;}
-        .hs-lbl{font-size:11px;color:rgba(255,255,255,.5);font-weight:400;}
+        .hs-item{
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            text-align:center;gap:4px;flex:1;
+            background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:14px;padding:14px 8px;
+            position:relative;overflow:hidden;
+        }
+        .hs-item::before{
+            content:'';position:absolute;top:0;left:10%;right:10%;height:2px;
+            background:linear-gradient(90deg,transparent,var(--mg),transparent);
+            border-radius:0 0 4px 4px;
+        }
+        .hs-num{font-size:26px;font-weight:900;color:var(--mg);line-height:1;}
+        .hs-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;line-height:1.3;text-transform:uppercase;letter-spacing:.5px;}
 
         /* Lado derecho — foto principal */
         .hero-right{
@@ -758,8 +770,16 @@
             .hero-left{padding:96px 20px 44px;align-items:flex-start;text-align:left;}
             .hero-pill{justify-content:flex-start;font-size:10.5px;}
             .hero-p{text-align:left;font-size:14px;}
-            .hero-stats{justify-content:space-between;gap:0;padding-top:24px;}
-            .hs-num{font-size:22px;}
+            .hero-stats{
+                display:grid;grid-template-columns:1fr 1fr;
+                gap:10px;padding-top:20px;width:100%;
+            }
+            .hs-item{
+                padding:16px 10px;
+                border-radius:16px;
+            }
+            .hs-num{font-size:24px;}
+            .hs-lbl{font-size:10px;}
             .hero-btns{flex-direction:column;align-items:stretch;width:100%;}
             .btn-mg,.btn-ghost{width:100%;justify-content:center;padding:14px 20px;}
             .hero-features{grid-template-columns:1fr 1fr;gap:8px;}
@@ -783,7 +803,6 @@
             .gal-item.tall{grid-row:span 1;height:220px;}
             .gal-item{height:200px;}
             .steps-row{grid-template-columns:1fr;}
-            .hero-stats{gap:0;justify-content:space-between;}
             .hs-num{font-size:20px;}
             .hero-features{grid-template-columns:1fr 1fr;gap:7px;}
             .float-wa a span{display:none;}
@@ -871,10 +890,10 @@
         <div class="hero-stats">
             <div class="hs-item">
                 <span class="hs-num">252+</span>
-                <span class="hs-lbl">Familias felices</span>
+                <span class="hs-lbl">Familias<br>felices</span>
             </div>
             <div class="hs-item">
-                <span class="hs-num">90m²</span>
+                <span class="hs-num">100m²</span>
                 <span class="hs-lbl">Desde</span>
             </div>
             <div class="hs-item">
@@ -883,7 +902,7 @@
             </div>
             <div class="hs-item">
                 <span class="hs-num">20'</span>
-                <span class="hs-lbl">De Huancayo</span>
+                <span class="hs-lbl">De<br>Huancayo</span>
             </div>
         </div>
     </div>

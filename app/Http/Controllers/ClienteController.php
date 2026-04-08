@@ -172,6 +172,7 @@ class ClienteController extends Controller
 
         $doc = Documento::create([
             'cliente_id' => $cliente->id,
+            'proyecto_id' => $proyecto->id,
             'nombre'     => $archivo->getClientOriginalName(),
             'ruta'       => $ruta,
             'tipo'       => $archivo->getMimeType(),

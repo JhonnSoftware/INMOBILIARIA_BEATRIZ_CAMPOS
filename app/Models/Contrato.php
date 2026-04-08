@@ -13,6 +13,7 @@ class Contrato extends Model
     protected $fillable = [
         'lote_id',
         'cliente_id',
+        'proyecto_id',
         'tipo',
         'precio_venta',
         'cuota_inicial',
@@ -35,6 +36,11 @@ class Contrato extends Model
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
+    public function proyecto(): BelongsTo
+    {
+        return $this->belongsTo(Proyecto::class, 'proyecto_id');
     }
 
     public function pagos(): HasMany

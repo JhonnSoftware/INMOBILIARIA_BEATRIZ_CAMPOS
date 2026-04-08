@@ -370,7 +370,7 @@
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar">
-    <a href="{{ url('/admin') }}" class="nav-brand">
+    <a href="{{ route('admin.dashboard') }}" class="nav-brand">
         <div class="nav-logo">
             <img src="{{ asset('imagenes/imagenes_dashboard/logo_02.png') }}" alt="BC Logo">
         </div>
@@ -381,13 +381,13 @@
     </a>
 
     <div class="nav-links">
-        <a href="{{ url('/admin') }}" class="nav-link">
+        <a href="{{ route('admin.dashboard') }}" class="nav-link">
             <i class="fas fa-th-large"></i> Dashboard
         </a>
         <a href="#" class="nav-link active">
             <i class="fas fa-map"></i> Lotes
         </a>
-        <a href="{{ url('/admin/proyectos/' . $proyecto->id . '/clientes') }}" class="nav-link">
+        <a href="{{ route('admin.proyectos.clientes', $proyecto) }}" class="nav-link">
             <i class="fas fa-users"></i> Clientes
         </a>
         <a href="#" class="nav-link">
@@ -408,7 +408,7 @@
     </div>
 
     <div class="nav-right">
-        <a href="{{ url('/admin') }}" class="nav-back">
+        <a href="{{ route('admin.dashboard') }}" class="nav-back">
             <i class="fas fa-arrow-left"></i> Volver
         </a>
     </div>
@@ -421,9 +421,9 @@
     <div class="page-header">
         <div class="ph-left">
             <div class="ph-breadcrumb">
-                <a href="{{ url('/admin') }}">Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 <span class="sep"><i class="fas fa-chevron-right"></i></span>
-                <a href="{{ url('/admin') }}">Proyectos</a>
+                <a href="{{ route('admin.dashboard') }}">Proyectos</a>
                 <span class="sep"><i class="fas fa-chevron-right"></i></span>
                 <span class="current">{{ $proyecto->nombre }}</span>
             </div>
@@ -586,7 +586,7 @@
 
 <script>
     const CSRF    = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const BASE    = '{{ url("/") }}';
+    const BASE    = @json(route('admin.proyectos.show', $proyecto));
     let filtroActual = 'todos';
     let busquedaActual = '';
 
@@ -594,7 +594,7 @@
     async function cambiarEstado(loteId, nuevoEstado) {
         mostrarSpinner(true);
         try {
-            const resp = await fetch(`${BASE}/admin/lotes/${loteId}/estado`, {
+            const resp = await fetch(`${BASE}/lotes/${loteId}/estado`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -767,6 +767,10 @@
         if (toastTimer) clearTimeout(toastTimer);
         toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
     }
+
+    @if(session('success'))
+    mostrarToast(@json(session('success')), 'ok');
+    @endif
 </script>
 </body>
 </html>

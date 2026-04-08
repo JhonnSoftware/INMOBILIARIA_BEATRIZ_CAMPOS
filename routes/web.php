@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProyectoLoteController;
+use App\Http\Controllers\Admin\ProyectoClienteController;
+use App\Http\Controllers\Admin\ProyectoCobranzaController;
+use App\Http\Controllers\ClienteController as ProyectoClienteSupportController;
 use App\Http\Controllers\ProyectoController;
-use App\Http\Controllers\LoteController;
-use App\Http\Controllers\ClienteController;
+use Illuminate\Support\Facades\Route;
 
-// Sitio web público (landing page)
 Route::get('/', function () {
     return view('website');
 });
 
-// Página de acceso al sistema (cliente / admin)
 Route::get('/acceso', function () {
     return view('welcome');
 });
@@ -27,57 +27,44 @@ Route::prefix('proyectos')->name('proyectos.')->group(function () {
     Route::view('/residencial-victor-campos', 'proyectos.victor-campos')->name('victor-campos');
 });
 
-// ============================================================
-// PANEL ADMINISTRADOR
-// ============================================================
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [ProyectoController::class, 'index'])->name('dashboard');
+    Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
 
-// Dashboard principal
-Route::get('/admin', [ProyectoController::class, 'index']);
+    Route::prefix('proyectos/{proyecto:slug}')
+        ->name('proyectos.')
+        ->scopeBindings()
+        ->group(function () {
+            Route::get('/', [ProyectoController::class, 'show'])->name('show');
 
-// Panel de gestión de un proyecto específico (lotes)
-Route::get('/admin/proyectos/{proyecto}', [ProyectoController::class, 'show'])
-    ->name('admin.proyectos.show');
+            Route::get('/lotes', [ProyectoLoteController::class, 'index'])->name('lotes');
+            Route::get('/lotes/create', [ProyectoLoteController::class, 'create'])->name('lotes.create');
+            Route::post('/lotes', [ProyectoLoteController::class, 'store'])->name('lotes.store');
+            Route::get('/lotes/{lote}/edit', [ProyectoLoteController::class, 'edit'])->name('lotes.edit');
+            Route::put('/lotes/{lote}', [ProyectoLoteController::class, 'update'])->name('lotes.update');
 
-// Listado de lotes por proyecto (JSON con filtros)
-Route::get('/admin/proyectos/{proyecto}/lotes', [LoteController::class, 'index'])
-    ->name('admin.proyectos.lotes');
+            Route::get('/clientes', [ProyectoClienteController::class, 'index'])->name('clientes');
+            Route::get('/clientes/create', [ProyectoClienteController::class, 'create'])->name('clientes.create');
+            Route::post('/clientes', [ProyectoClienteController::class, 'store'])->name('clientes.store');
+            Route::get('/clientes/{cliente}/edit', [ProyectoClienteController::class, 'edit'])->name('clientes.edit');
+            Route::put('/clientes/{cliente}', [ProyectoClienteController::class, 'update'])->name('clientes.update');
+            Route::delete('/clientes/{cliente}', [ProyectoClienteController::class, 'destroy'])->name('clientes.destroy');
+            Route::post('/clientes/{cliente}/desistido', [ProyectoClienteController::class, 'desistido'])->name('clientes.desistido');
 
-// Cambiar estado de un lote (AJAX — retorna JSON)
-Route::post('/admin/lotes/{lote}/estado', [LoteController::class, 'updateEstado'])
-    ->name('admin.lotes.estado');
+            Route::get('/clientes/{cliente}/comentarios', [ProyectoClienteSupportController::class, 'getComentarios'])->name('clientes.comentarios');
+            Route::post('/clientes/{cliente}/comentarios', [ProyectoClienteSupportController::class, 'addComentario'])->name('clientes.comentarios.add');
 
-// ── CLIENTES ──────────────────────────────────────────────────────────────────
+            Route::get('/clientes/{cliente}/documentos', [ProyectoClienteSupportController::class, 'getDocumentos'])->name('clientes.documentos');
+            Route::post('/clientes/{cliente}/documentos', [ProyectoClienteSupportController::class, 'uploadDocumento'])->name('clientes.documentos.upload');
+            Route::delete('/clientes/{cliente}/documentos/{documento}', [ProyectoClienteSupportController::class, 'deleteDocumento'])->name('clientes.documentos.delete');
 
-// Listado de clientes de un proyecto
-Route::get('/admin/proyectos/{proyecto}/clientes', [ClienteController::class, 'index'])
-    ->name('admin.proyectos.clientes');
-
-// Registrar nuevo cliente
-Route::post('/admin/proyectos/{proyecto}/clientes', [ClienteController::class, 'store'])
-    ->name('admin.proyectos.clientes.store');
-
-// Editar cliente
-Route::put('/admin/proyectos/{proyecto}/clientes/{cliente}', [ClienteController::class, 'update'])
-    ->name('admin.proyectos.clientes.update');
-
-// Eliminar cliente
-Route::delete('/admin/proyectos/{proyecto}/clientes/{cliente}', [ClienteController::class, 'destroy'])
-    ->name('admin.proyectos.clientes.destroy');
-
-// Marcar como desistido
-Route::post('/admin/proyectos/{proyecto}/clientes/{cliente}/desistido', [ClienteController::class, 'desistido'])
-    ->name('admin.proyectos.clientes.desistido');
-
-// Comentarios
-Route::get('/admin/proyectos/{proyecto}/clientes/{cliente}/comentarios', [ClienteController::class, 'getComentarios'])
-    ->name('admin.proyectos.clientes.comentarios');
-Route::post('/admin/proyectos/{proyecto}/clientes/{cliente}/comentarios', [ClienteController::class, 'addComentario'])
-    ->name('admin.proyectos.clientes.comentarios.add');
-
-// Documentos
-Route::get('/admin/proyectos/{proyecto}/clientes/{cliente}/documentos', [ClienteController::class, 'getDocumentos'])
-    ->name('admin.proyectos.clientes.documentos');
-Route::post('/admin/proyectos/{proyecto}/clientes/{cliente}/documentos', [ClienteController::class, 'uploadDocumento'])
-    ->name('admin.proyectos.clientes.documentos.upload');
-Route::delete('/admin/proyectos/{proyecto}/clientes/{cliente}/documentos/{documento}', [ClienteController::class, 'deleteDocumento'])
-    ->name('admin.proyectos.clientes.documentos.delete');
+            Route::get('/cobranza', [ProyectoCobranzaController::class, 'index'])->name('cobranza');
+            Route::get('/cobranza/buscar/dni', [ProyectoCobranzaController::class, 'buscarPorDni'])->name('cobranza.buscar-dni');
+            Route::get('/cobranza/buscar/lote', [ProyectoCobranzaController::class, 'buscarPorLote'])->name('cobranza.buscar-lote');
+            Route::post('/cobranza/pagos', [ProyectoCobranzaController::class, 'storePago'])->name('cobranza.pagos.store');
+            Route::put('/cobranza/pagos/{pago}', [ProyectoCobranzaController::class, 'updatePago'])->name('cobranza.pagos.update');
+            Route::delete('/cobranza/pagos/{pago}', [ProyectoCobranzaController::class, 'destroyPago'])->name('cobranza.pagos.destroy');
+            Route::get('/cobranza/clientes/{cliente}/cronograma', [ProyectoCobranzaController::class, 'verCronograma'])->name('cobranza.cronograma');
+            Route::post('/cobranza/clientes/{cliente}/cronograma/regenerar', [ProyectoCobranzaController::class, 'regenerarCronograma'])->name('cobranza.cronograma.regenerar');
+        });
+});

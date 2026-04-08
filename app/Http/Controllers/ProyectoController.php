@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proyecto;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ProyectoController extends Controller
@@ -12,9 +13,37 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-        $proyectos = Proyecto::withCount('lotes')->get();
+        $proyectos = Proyecto::withCount('lotes')
+            ->orderBy('orden_menu')
+            ->orderBy('nombre')
+            ->get();
 
         return view('admin.dashboard', compact('proyectos'));
+    }
+
+    /**
+     * Registrar un nuevo proyecto desde el dashboard.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'nombre' => 'required|string|max:150',
+        ]);
+
+        $proyecto = Proyecto::create([
+            'nombre' => $data['nombre'],
+            'nombre_corto' => $data['nombre'],
+            'ubicacion' => 'Ubicación por definir',
+            'direccion' => 'Ubicación por definir',
+            'descripcion' => null,
+            'precio_base' => 0,
+            'estado' => 'activo',
+            'orden_menu' => ((int) Proyecto::max('orden_menu')) + 1,
+        ]);
+
+        return redirect()
+            ->route('admin.proyectos.lotes', $proyecto)
+            ->with('success', 'Proyecto creado correctamente.');
     }
 
     /**
@@ -22,16 +51,6 @@ class ProyectoController extends Controller
      */
     public function show(Proyecto $proyecto)
     {
-        $lotes = $proyecto->lotes()->orderBy('manzana')->orderBy('numero')->get();
-
-        $estadisticas = [
-            'libre'         => $lotes->where('estado', 'libre')->count(),
-            'reservado'     => $lotes->where('estado', 'reservado')->count(),
-            'financiamiento' => $lotes->where('estado', 'financiamiento')->count(),
-            'vendido'       => $lotes->where('estado', 'vendido')->count(),
-            'total'         => $lotes->count(),
-        ];
-
-        return view('admin.proyecto', compact('proyecto', 'lotes', 'estadisticas'));
+        return redirect()->route('admin.proyectos.lotes', $proyecto);
     }
 }
