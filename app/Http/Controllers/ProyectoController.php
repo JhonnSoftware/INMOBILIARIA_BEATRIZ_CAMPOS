@@ -8,22 +8,16 @@ use Illuminate\Http\Request;
 
 class ProyectoController extends Controller
 {
-    /**
-     * Dashboard principal: lista todos los proyectos.
-     */
     public function index()
     {
         $proyectos = Proyecto::withCount('lotes')
-            ->orderBy('orden_menu')
-            ->orderBy('nombre')
+            ->orderByDesc('orden_menu')
+            ->orderByDesc('id')
             ->get();
 
         return view('admin.dashboard', compact('proyectos'));
     }
 
-    /**
-     * Registrar un nuevo proyecto desde el dashboard.
-     */
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -33,8 +27,8 @@ class ProyectoController extends Controller
         $proyecto = Proyecto::create([
             'nombre' => $data['nombre'],
             'nombre_corto' => $data['nombre'],
-            'ubicacion' => 'Ubicación por definir',
-            'direccion' => 'Ubicación por definir',
+            'ubicacion' => 'Ubicacion por definir',
+            'direccion' => 'Ubicacion por definir',
             'descripcion' => null,
             'precio_base' => 0,
             'estado' => 'activo',
@@ -42,15 +36,12 @@ class ProyectoController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.proyectos.lotes', $proyecto)
+            ->route('admin.proyectos.dashboard', $proyecto)
             ->with('success', 'Proyecto creado correctamente.');
     }
 
-    /**
-     * Panel de gestión de un proyecto específico.
-     */
-    public function show(Proyecto $proyecto)
+    public function show(Proyecto $proyecto): RedirectResponse
     {
-        return redirect()->route('admin.proyectos.lotes', $proyecto);
+        return redirect()->route('admin.proyectos.dashboard', $proyecto);
     }
 }

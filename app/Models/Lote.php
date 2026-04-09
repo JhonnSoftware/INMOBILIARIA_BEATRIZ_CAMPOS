@@ -62,6 +62,11 @@ class Lote extends Model
         return $this->hasMany(Ingreso::class, 'lote_id')->orderByDesc('fecha_ingreso')->orderByDesc('id');
     }
 
+    public function documentos(): HasMany
+    {
+        return $this->hasMany(Documento::class, 'lote_id')->orderByDesc('created_at');
+    }
+
     public function cronogramaPagos(): HasMany
     {
         return $this->hasMany(CronogramaPago::class, 'lote_id')

@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\UsuarioSistemaController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\ProyectoLoteController;
 use App\Http\Controllers\Admin\ProyectoClienteController;
+use App\Http\Controllers\Admin\ProyectoCajaController;
 use App\Http\Controllers\Admin\ProyectoCobranzaController;
+use App\Http\Controllers\Admin\ProyectoDashboardController;
+use App\Http\Controllers\Admin\ProyectoDocumentoController;
 use App\Http\Controllers\Admin\ProyectoEgresoController;
 use App\Http\Controllers\Admin\ProyectoIngresoController;
 use App\Http\Controllers\ClienteController as ProyectoClienteSupportController;
@@ -13,9 +18,14 @@ Route::get('/', function () {
     return view('website');
 });
 
-Route::get('/acceso', function () {
-    return view('welcome');
+Route::middleware('guest')->group(function () {
+    Route::get('/acceso', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/acceso', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 });
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
 
 Route::get('/cliente', function () {
     return view('welcome');
@@ -29,15 +39,27 @@ Route::prefix('proyectos')->name('proyectos.')->group(function () {
     Route::view('/residencial-victor-campos', 'proyectos.victor-campos')->name('victor-campos');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'active.user'])->name('admin.')->group(function () {
     Route::get('/', [ProyectoController::class, 'index'])->name('dashboard');
     Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
+
+    Route::middleware(['auth', 'active.user', 'role:dueno'])->group(function () {
+        Route::get('/usuarios', [UsuarioSistemaController::class, 'index'])->name('usuarios.index');
+        Route::get('/usuarios/create', [UsuarioSistemaController::class, 'create'])->name('usuarios.create');
+        Route::post('/usuarios', [UsuarioSistemaController::class, 'store'])->name('usuarios.store');
+        Route::get('/usuarios/{user}/edit', [UsuarioSistemaController::class, 'edit'])->name('usuarios.edit');
+        Route::put('/usuarios/{user}', [UsuarioSistemaController::class, 'update'])->name('usuarios.update');
+        Route::get('/usuarios/{user}/password', [UsuarioSistemaController::class, 'editPassword'])->name('usuarios.password.edit');
+        Route::put('/usuarios/{user}/password', [UsuarioSistemaController::class, 'updatePassword'])->name('usuarios.password.update');
+        Route::delete('/usuarios/{user}', [UsuarioSistemaController::class, 'destroy'])->name('usuarios.destroy');
+    });
 
     Route::prefix('proyectos/{proyecto:slug}')
         ->name('proyectos.')
         ->scopeBindings()
         ->group(function () {
             Route::get('/', [ProyectoController::class, 'show'])->name('show');
+            Route::get('/dashboard', [ProyectoDashboardController::class, 'index'])->name('dashboard');
 
             Route::get('/lotes', [ProyectoLoteController::class, 'index'])->name('lotes');
             Route::get('/lotes/create', [ProyectoLoteController::class, 'create'])->name('lotes.create');
@@ -83,5 +105,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/egresos/{egreso}', [ProyectoEgresoController::class, 'update'])->name('egresos.update');
             Route::delete('/egresos/{egreso}', [ProyectoEgresoController::class, 'destroy'])->name('egresos.destroy');
             Route::delete('/egresos/{egreso}/archivos/{archivo}', [ProyectoEgresoController::class, 'destroyArchivo'])->name('egresos.archivos.destroy');
+
+            Route::get('/caja', [ProyectoCajaController::class, 'index'])->name('caja');
+
+            Route::get('/documentos', [ProyectoDocumentoController::class, 'index'])->name('documentos');
+            Route::get('/documentos/create', [ProyectoDocumentoController::class, 'create'])->name('documentos.create');
+            Route::post('/documentos', [ProyectoDocumentoController::class, 'store'])->name('documentos.store');
+            Route::get('/documentos/{documento}/download', [ProyectoDocumentoController::class, 'download'])->name('documentos.download');
+            Route::delete('/documentos/{documento}', [ProyectoDocumentoController::class, 'destroy'])->name('documentos.destroy');
         });
 });

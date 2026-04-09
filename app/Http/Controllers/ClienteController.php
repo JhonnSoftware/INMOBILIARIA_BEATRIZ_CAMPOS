@@ -6,14 +6,12 @@ use App\Models\Cliente;
 use App\Models\Comentario;
 use App\Models\Documento;
 use App\Models\Proyecto;
+use App\Support\DocumentoCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ClienteController extends Controller
 {
-    /**
-     * Listado de clientes de un proyecto.
-     */
     public function index(Proyecto $proyecto)
     {
         $clientes = $proyecto->clientes()->orderByDesc('created_at')->get();
@@ -21,25 +19,22 @@ class ClienteController extends Controller
         return view('admin.clientes', compact('proyecto', 'clientes'));
     }
 
-    /**
-     * Guardar nuevo cliente.
-     */
     public function store(Request $request, Proyecto $proyecto)
     {
         $data = $request->validate([
-            'nombre'         => 'required|string|max:100',
-            'apellido'       => 'required|string|max:100',
-            'dni'            => 'required|string|max:20',
-            'manzana'        => 'nullable|string|max:10',
-            'numero_lote'    => 'nullable|string|max:20',
-            'precio_lote'    => 'nullable|numeric|min:0',
-            'cuota_mensual'  => 'nullable|numeric|min:0',
-            'asesor'         => 'nullable|string|max:100',
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'dni' => 'required|string|max:20',
+            'manzana' => 'nullable|string|max:10',
+            'numero_lote' => 'nullable|string|max:20',
+            'precio_lote' => 'nullable|numeric|min:0',
+            'cuota_mensual' => 'nullable|numeric|min:0',
+            'asesor' => 'nullable|string|max:100',
             'fecha_registro' => 'nullable|date',
-            'estado'         => 'required|in:reservado,financiamiento,vendido,desistido',
-            'telefono'       => 'nullable|string|max:20',
-            'email'          => 'nullable|email|max:150',
-            'direccion'      => 'nullable|string|max:200',
+            'estado' => 'required|in:reservado,financiamiento,vendido,desistido',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:150',
+            'direccion' => 'nullable|string|max:200',
         ]);
 
         $data['proyecto_id'] = $proyecto->id;
@@ -50,25 +45,22 @@ class ClienteController extends Controller
             ->with('success', 'Cliente registrado correctamente.');
     }
 
-    /**
-     * Actualizar cliente existente.
-     */
     public function update(Request $request, Proyecto $proyecto, Cliente $cliente)
     {
         $data = $request->validate([
-            'nombre'         => 'required|string|max:100',
-            'apellido'       => 'required|string|max:100',
-            'dni'            => 'required|string|max:20',
-            'manzana'        => 'nullable|string|max:10',
-            'numero_lote'    => 'nullable|string|max:20',
-            'precio_lote'    => 'nullable|numeric|min:0',
-            'cuota_mensual'  => 'nullable|numeric|min:0',
-            'asesor'         => 'nullable|string|max:100',
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'dni' => 'required|string|max:20',
+            'manzana' => 'nullable|string|max:10',
+            'numero_lote' => 'nullable|string|max:20',
+            'precio_lote' => 'nullable|numeric|min:0',
+            'cuota_mensual' => 'nullable|numeric|min:0',
+            'asesor' => 'nullable|string|max:100',
             'fecha_registro' => 'nullable|date',
-            'estado'         => 'required|in:reservado,financiamiento,vendido,desistido',
-            'telefono'       => 'nullable|string|max:20',
-            'email'          => 'nullable|email|max:150',
-            'direccion'      => 'nullable|string|max:200',
+            'estado' => 'required|in:reservado,financiamiento,vendido,desistido',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:150',
+            'direccion' => 'nullable|string|max:200',
         ]);
 
         $cliente->update($data);
@@ -76,14 +68,10 @@ class ClienteController extends Controller
         return response()->json(['ok' => true, 'mensaje' => 'Cliente actualizado.']);
     }
 
-    /**
-     * Eliminar cliente.
-     */
     public function destroy(Proyecto $proyecto, Cliente $cliente)
     {
-        // Borrar archivos físicos
         foreach ($cliente->documentos as $doc) {
-            Storage::disk('public')->delete($doc->ruta);
+            Storage::disk('public')->delete($doc->ruta_archivo);
         }
 
         $cliente->delete();
@@ -91,9 +79,6 @@ class ClienteController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    /**
-     * Marcar cliente como desistido.
-     */
     public function desistido(Proyecto $proyecto, Cliente $cliente)
     {
         $cliente->update(['estado' => 'desistido']);
@@ -101,24 +86,18 @@ class ClienteController extends Controller
         return response()->json(['ok' => true, 'estado' => 'desistido']);
     }
 
-    /**
-     * Obtener comentarios de un cliente (JSON).
-     */
     public function getComentarios(Proyecto $proyecto, Cliente $cliente)
     {
-        $comentarios = $cliente->comentarios()->get()->map(fn($c) => [
-            'id'     => $c->id,
-            'texto'  => $c->texto,
-            'autor'  => $c->autor,
-            'fecha'  => $c->created_at->format('d/m/Y H:i'),
+        $comentarios = $cliente->comentarios()->get()->map(fn ($c) => [
+            'id' => $c->id,
+            'texto' => $c->texto,
+            'autor' => $c->autor,
+            'fecha' => $c->created_at->format('d/m/Y H:i'),
         ]);
 
         return response()->json($comentarios);
     }
 
-    /**
-     * Agregar comentario a un cliente.
-     */
     public function addComentario(Request $request, Proyecto $proyecto, Cliente $cliente)
     {
         $data = $request->validate([
@@ -128,73 +107,89 @@ class ClienteController extends Controller
 
         $comentario = Comentario::create([
             'cliente_id' => $cliente->id,
-            'texto'      => $data['texto'],
-            'autor'      => $data['autor'] ?? 'Admin',
+            'texto' => $data['texto'],
+            'autor' => $data['autor'] ?? 'Admin',
         ]);
 
         return response()->json([
-            'ok'    => true,
-            'id'    => $comentario->id,
+            'ok' => true,
+            'id' => $comentario->id,
             'texto' => $comentario->texto,
             'autor' => $comentario->autor,
             'fecha' => $comentario->created_at->format('d/m/Y H:i'),
         ]);
     }
 
-    /**
-     * Obtener documentos de un cliente (JSON).
-     */
     public function getDocumentos(Proyecto $proyecto, Cliente $cliente)
     {
-        $docs = $cliente->documentos()->get()->map(fn($d) => [
-            'id'      => $d->id,
-            'nombre'  => $d->nombre,
-            'tipo'    => $d->tipo,
-            'tamanio' => $d->tamanio,
-            'url'     => asset('storage/' . $d->ruta),
-            'fecha'   => $d->created_at->format('d/m/Y'),
-        ]);
+        $docs = $cliente->documentos()
+            ->where('estado', 'activo')
+            ->get()
+            ->map(fn ($d) => [
+                'id' => $d->id,
+                'nombre' => $d->titulo,
+                'tipo' => $d->tipo_documento,
+                'tamanio' => $d->tamano_archivo,
+                'url' => route('admin.proyectos.documentos.download', [$proyecto, $d]),
+                'fecha' => optional($d->fecha_documento ?: $d->created_at)->format('d/m/Y'),
+            ]);
 
         return response()->json($docs);
     }
 
-    /**
-     * Subir documento a un cliente.
-     */
     public function uploadDocumento(Request $request, Proyecto $proyecto, Cliente $cliente)
     {
         $request->validate([
-            'archivo' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+            'archivo' => 'required|file|max:15360|mimes:' . implode(',', DocumentoCatalog::EXTENSIONES_PERMITIDAS),
         ]);
 
         $archivo = $request->file('archivo');
-        $ruta    = $archivo->store("documentos/cliente_{$cliente->id}", 'public');
+        $extension = strtolower((string) $archivo->getClientOriginalExtension());
+        $storedName = now()->format('YmdHis') . '_' . $cliente->id . '_' . substr(md5((string) microtime(true)), 0, 10) . ($extension !== '' ? ".{$extension}" : '');
+        $ruta = $archivo->storeAs(
+            DocumentoCatalog::directory($proyecto->id, 'cliente', $cliente->lote_id, $cliente->id),
+            $storedName,
+            'public'
+        );
 
         $doc = Documento::create([
-            'cliente_id' => $cliente->id,
             'proyecto_id' => $proyecto->id,
-            'nombre'     => $archivo->getClientOriginalName(),
-            'ruta'       => $ruta,
-            'tipo'       => $archivo->getMimeType(),
-            'tamanio'    => $archivo->getSize(),
+            'lote_id' => $cliente->lote_id,
+            'cliente_id' => $cliente->id,
+            'pago_id' => null,
+            'contexto' => 'cliente',
+            'tipo_documento' => 'anexo',
+            'titulo' => pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME) ?: $archivo->getClientOriginalName(),
+            'descripcion' => null,
+            'nombre_original' => $archivo->getClientOriginalName(),
+            'nombre_archivo' => $storedName,
+            'ruta_archivo' => $ruta,
+            'extension' => $extension !== '' ? $extension : null,
+            'mime_type' => $archivo->getMimeType(),
+            'tamano_archivo' => $archivo->getSize(),
+            'estado' => 'activo',
+            'fecha_documento' => now()->toDateString(),
+            'subido_por' => $request->user()?->name ?? 'Administrador',
         ]);
 
         return response()->json([
-            'ok'     => true,
-            'id'     => $doc->id,
-            'nombre' => $doc->nombre,
-            'url'    => asset('storage/' . $doc->ruta),
-            'fecha'  => $doc->created_at->format('d/m/Y'),
+            'ok' => true,
+            'id' => $doc->id,
+            'nombre' => $doc->titulo,
+            'url' => route('admin.proyectos.documentos.download', [$proyecto, $doc]),
+            'fecha' => $doc->created_at->format('d/m/Y'),
         ]);
     }
 
-    /**
-     * Eliminar documento.
-     */
     public function deleteDocumento(Proyecto $proyecto, Cliente $cliente, Documento $documento)
     {
-        Storage::disk('public')->delete($documento->ruta);
-        $documento->delete();
+        abort_unless((int) $documento->cliente_id === (int) $cliente->id, 404);
+
+        Storage::disk('public')->delete($documento->ruta_archivo);
+
+        $documento->update([
+            'estado' => 'eliminado',
+        ]);
 
         return response()->json(['ok' => true]);
     }

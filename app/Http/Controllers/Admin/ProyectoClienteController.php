@@ -185,16 +185,19 @@ class ProyectoClienteController extends Controller
 
         DB::transaction(function () use ($cliente) {
             $rutas = $cliente->documentos
-                ->pluck('ruta')
+                ->pluck('ruta_archivo')
                 ->filter()
                 ->all();
 
-            if ($rutas !== []) {
-                Storage::disk('public')->delete($rutas);
-            }
-
             $lote = $cliente->lote;
+            $cliente->documentos()->delete();
             $cliente->delete();
+
+            DB::afterCommit(function () use ($rutas) {
+                if ($rutas !== []) {
+                    Storage::disk('public')->delete($rutas);
+                }
+            });
 
             if ($lote) {
                 $this->refreshLoteEstado($lote->fresh());

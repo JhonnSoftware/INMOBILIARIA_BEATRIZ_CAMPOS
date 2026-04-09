@@ -119,6 +119,11 @@ class Pago extends Model
         return $this->hasOne(Ingreso::class, 'pago_id');
     }
 
+    public function documentos(): HasMany
+    {
+        return $this->hasMany(Documento::class, 'pago_id')->orderByDesc('created_at');
+    }
+
     public function shouldGenerateIngreso(): bool
     {
         return $this->estado_pago === 'registrado'
