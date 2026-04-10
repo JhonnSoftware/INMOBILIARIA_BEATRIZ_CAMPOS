@@ -77,6 +77,8 @@ Route::prefix('admin')->middleware(['auth', 'active.user'])->name('admin.')->gro
 
             Route::get('/clientes/{cliente}/comentarios', [ProyectoClienteSupportController::class, 'getComentarios'])->name('clientes.comentarios');
             Route::post('/clientes/{cliente}/comentarios', [ProyectoClienteSupportController::class, 'addComentario'])->name('clientes.comentarios.add');
+            Route::put('/clientes/{cliente}/comentarios/{comentario}', [ProyectoClienteSupportController::class, 'updateComentario'])->name('clientes.comentarios.update');
+            Route::delete('/clientes/{cliente}/comentarios/{comentario}', [ProyectoClienteSupportController::class, 'deleteComentario'])->name('clientes.comentarios.delete');
 
             Route::get('/clientes/{cliente}/documentos', [ProyectoClienteSupportController::class, 'getDocumentos'])->name('clientes.documentos');
             Route::post('/clientes/{cliente}/documentos', [ProyectoClienteSupportController::class, 'uploadDocumento'])->name('clientes.documentos.upload');
@@ -104,6 +106,7 @@ Route::prefix('admin')->middleware(['auth', 'active.user'])->name('admin.')->gro
             Route::get('/egresos/{egreso}/edit', [ProyectoEgresoController::class, 'edit'])->name('egresos.edit');
             Route::put('/egresos/{egreso}', [ProyectoEgresoController::class, 'update'])->name('egresos.update');
             Route::delete('/egresos/{egreso}', [ProyectoEgresoController::class, 'destroy'])->name('egresos.destroy');
+            Route::post('/egresos/{egreso}/archivos', [ProyectoEgresoController::class, 'storeArchivo'])->name('egresos.archivos.store');
             Route::delete('/egresos/{egreso}/archivos/{archivo}', [ProyectoEgresoController::class, 'destroyArchivo'])->name('egresos.archivos.destroy');
 
             Route::get('/caja', [ProyectoCajaController::class, 'index'])->name('caja');

@@ -12,7 +12,9 @@
       "Bash(sed -i 's|href=\"\"/admin\"\"|href=\"\"{{ url\\('\"''\"'/admin'\"''\"'\\) }}\"\"|g' resources/views/welcome.blade.php)",
       "Bash(sed -i 's|href=\"\"/\"\"|href=\"\"{{ url\\('\"''\"'/'\"''\"'\\) }}\"\"|g' resources/views/welcome.blade.php)",
       "Bash(php -r \":*)",
-      "Read(//c/xampp/htdocs/cetecop/**)"
+      "Read(//c/xampp/htdocs/cetecop/**)",
+      "Bash(grep -E \"\\\\.\\(php|blade\\\\.php\\)$\")",
+      "Bash(grep -v \"^$\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\user\\.claude\\projects\\c--xampp-htdocs-BC-ibmobiliaria",

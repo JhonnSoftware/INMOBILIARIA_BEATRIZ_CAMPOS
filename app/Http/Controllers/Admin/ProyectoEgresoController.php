@@ -229,6 +229,37 @@ class ProyectoEgresoController extends Controller
             ->with('success', 'Egreso eliminado correctamente.');
     }
 
+    public function storeArchivo(Request $request, Proyecto $proyecto, Egreso $egreso): RedirectResponse
+    {
+        abort_unless((int) $egreso->proyecto_id === (int) $proyecto->id, 404);
+
+        $request->validate([
+            'archivos'   => ['required', 'array', 'min:1'],
+            'archivos.*' => ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt'],
+        ], [], [
+            'archivos'   => 'archivos',
+            'archivos.*' => 'archivo adjunto',
+        ]);
+
+        $paths = [];
+
+        try {
+            DB::transaction(function () use ($egreso, $request, &$paths) {
+                $paths = $this->storeArchivos($egreso, $request->file('archivos', []));
+            });
+        } catch (Throwable $exception) {
+            if ($paths !== []) {
+                Storage::disk('public')->delete($paths);
+            }
+
+            throw $exception;
+        }
+
+        return redirect()
+            ->route('admin.proyectos.egresos', $proyecto)
+            ->with('success', count($paths) . ' archivo(s) subido(s) correctamente.');
+    }
+
     public function destroyArchivo(Request $request, Proyecto $proyecto, Egreso $egreso, EgresoArchivo $archivo): RedirectResponse
     {
         $this->authorizeManagement($request, $egreso);

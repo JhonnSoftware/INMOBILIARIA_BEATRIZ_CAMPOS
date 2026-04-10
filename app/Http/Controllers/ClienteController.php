@@ -7,6 +7,7 @@ use App\Models\Comentario;
 use App\Models\Documento;
 use App\Models\Proyecto;
 use App\Support\DocumentoCatalog;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -108,7 +109,7 @@ class ClienteController extends Controller
         $comentario = Comentario::create([
             'cliente_id' => $cliente->id,
             'texto' => $data['texto'],
-            'autor' => $data['autor'] ?? 'Admin',
+            'autor' => $request->user()?->name ?? $data['autor'] ?? 'Administrador',
         ]);
 
         return response()->json([
@@ -118,6 +119,36 @@ class ClienteController extends Controller
             'autor' => $comentario->autor,
             'fecha' => $comentario->created_at->format('d/m/Y H:i'),
         ]);
+    }
+
+    public function updateComentario(Request $request, Proyecto $proyecto, Cliente $cliente, Comentario $comentario): JsonResponse
+    {
+        abort_unless((int) $comentario->cliente_id === (int) $cliente->id, 404);
+
+        $data = $request->validate([
+            'texto' => 'required|string|max:1000',
+        ]);
+
+        $comentario->update([
+            'texto' => trim((string) $data['texto']),
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'id' => $comentario->id,
+            'texto' => $comentario->texto,
+            'autor' => $comentario->autor,
+            'fecha' => $comentario->updated_at->format('d/m/Y H:i'),
+        ]);
+    }
+
+    public function deleteComentario(Proyecto $proyecto, Cliente $cliente, Comentario $comentario): JsonResponse
+    {
+        abort_unless((int) $comentario->cliente_id === (int) $cliente->id, 404);
+
+        $comentario->delete();
+
+        return response()->json(['ok' => true]);
     }
 
     public function getDocumentos(Proyecto $proyecto, Cliente $cliente)

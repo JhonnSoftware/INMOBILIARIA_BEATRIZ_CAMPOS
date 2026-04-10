@@ -21,8 +21,10 @@ class ProyectoCobranzaController extends Controller
 
     public function index(Request $request, Proyecto $proyecto): View
     {
+        $tab = $request->input('tab', 'registro');
         $dni = preg_replace('/\D+/', '', (string) $request->input('dni'));
         $lote = trim((string) $request->input('lote'));
+        $manzana = trim((string) $request->input('manzana'));
         $modalidad = $request->string('modalidad')->toString();
         $estado = $request->string('estado')->toString();
         $selectedClientId = (int) $request->input('cliente');
@@ -34,11 +36,18 @@ class ProyectoCobranzaController extends Controller
         $clientes = $proyecto->clientes()
             ->with('lote')
             ->when($dni !== '', fn ($query) => $query->where('dni', 'like', "%{$dni}%"))
-            ->when($lote !== '', function ($query) use ($lote) {
-                $query->whereHas('lote', function ($loteQuery) use ($lote) {
-                    $loteQuery->where('manzana', 'like', "%{$lote}%")
-                        ->orWhere('numero', 'like', "%{$lote}%")
-                        ->orWhere('codigo', 'like', "%{$lote}%");
+            ->when($lote !== '' || $manzana !== '', function ($query) use ($lote, $manzana) {
+                $query->whereHas('lote', function ($loteQuery) use ($lote, $manzana) {
+                    if ($manzana !== '' && $lote !== '') {
+                        $loteQuery->where('manzana', 'like', "%{$manzana}%")
+                            ->where('numero', 'like', "%{$lote}%");
+                    } elseif ($manzana !== '') {
+                        $loteQuery->where('manzana', 'like', "%{$manzana}%");
+                    } else {
+                        $loteQuery->where('manzana', 'like', "%{$lote}%")
+                            ->orWhere('numero', 'like', "%{$lote}%")
+                            ->orWhere('codigo', 'like', "%{$lote}%");
+                    }
                 });
             })
             ->when($modalidad, fn ($query) => $query->where('modalidad', $modalidad))
@@ -50,17 +59,13 @@ class ProyectoCobranzaController extends Controller
             ->withQueryString();
 
         $selectedClient = null;
+        $hasSearch = $dni !== '' || $lote !== '' || $manzana !== '';
 
+        // Solo cargar el cliente cuando se seleccionó explícitamente desde la tabla de lotes
         if ($selectedClientId > 0) {
             $selectedClient = $proyecto->clientes()
                 ->with('lote')
                 ->find($selectedClientId);
-        }
-
-        if (! $selectedClient && $clientes->isNotEmpty()) {
-            $selectedClient = $proyecto->clientes()
-                ->with('lote')
-                ->find($clientes->first()->id);
         }
 
         $historialPagos = null;
@@ -100,8 +105,10 @@ class ProyectoCobranzaController extends Controller
             'cronogramaPreview' => $cronogramaPreview,
             'dni' => $dni,
             'lote' => $lote,
+            'manzana' => $manzana,
             'modalidad' => $modalidad,
             'estado' => $estado,
+            'hasSearch' => $hasSearch,
             'resumen' => $resumen,
             'modalidades' => Cliente::MODALIDADES,
             'estadosCobranza' => Cliente::ESTADOS_COBRANZA,
@@ -292,14 +299,6 @@ class ProyectoCobranzaController extends Controller
                 && ! $cliente->numero_cuotas
             ) {
                 $validator->errors()->add('numero_cuotas', 'El pago inicial para financiamiento debe definir el numero de cuotas.');
-            }
-
-            if (
-                $payload['tipo_pago'] === 'cuota'
-                && ! $cliente->numero_cuotas
-                && ! $payload['numero_cuotas']
-            ) {
-                $validator->errors()->add('numero_cuotas', 'Primero debes configurar el numero de cuotas del cliente.');
             }
 
             if (

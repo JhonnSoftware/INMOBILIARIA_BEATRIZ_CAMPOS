@@ -64,29 +64,63 @@ class ProyectoIngresoController extends Controller
             ->withQueryString();
 
         $resumen = [
-            'periodo' => (clone $query)->where('estado', 'registrado')->sum('monto'),
-            'hoy' => $proyecto->ingresos()->where('estado', 'registrado')->whereDate('fecha_ingreso', now()->toDateString())->sum('monto'),
-            'mes' => $proyecto->ingresos()->where('estado', 'registrado')->whereBetween('fecha_ingreso', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])->sum('monto'),
+            'periodo'  => (clone $query)->where('estado', 'registrado')->sum('monto'),
+            'hoy'      => $proyecto->ingresos()->where('estado', 'registrado')->whereDate('fecha_ingreso', now()->toDateString())->sum('monto'),
+            'mes'      => $proyecto->ingresos()->where('estado', 'registrado')->whereBetween('fecha_ingreso', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])->sum('monto'),
             'cobranza' => (clone $query)->where('estado', 'registrado')->where('origen', 'cobranza')->sum('monto'),
-            'manual' => (clone $query)->where('estado', 'registrado')->where('origen', 'manual')->sum('monto'),
+            'manual'   => (clone $query)->where('estado', 'registrado')->where('origen', 'manual')->sum('monto'),
+            'masAlto'  => $proyecto->ingresos()->where('estado', 'registrado')->max('monto') ?? 0,
+            'cantidad' => (clone $query)->where('estado', 'registrado')->count(),
         ];
 
+        // Ingresos por día del mes actual (para gráfica)
+        $ingresosPorDia = $proyecto->ingresos()
+            ->where('estado', 'registrado')
+            ->whereBetween('fecha_ingreso', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
+            ->select('fecha_ingreso', DB::raw('SUM(monto) as total'))
+            ->groupBy('fecha_ingreso')
+            ->orderBy('fecha_ingreso')
+            ->pluck('total', 'fecha_ingreso')
+            ->all();
+
+        // Ingresos por mes del año actual
+        $ingresosPorMes = $proyecto->ingresos()
+            ->where('estado', 'registrado')
+            ->whereYear('fecha_ingreso', now()->year)
+            ->select(DB::raw('MONTH(fecha_ingreso) as mes'), DB::raw('SUM(monto) as total'))
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->pluck('total', 'mes')
+            ->all();
+
+        // Últimos ingresos registrados
+        $ultimosIngresos = $proyecto->ingresos()
+            ->with(['cliente', 'lote'])
+            ->where('estado', 'registrado')
+            ->orderByDesc('fecha_ingreso')
+            ->orderByDesc('id')
+            ->limit(8)
+            ->get();
+
         return view('admin.proyectos.ingresos.index', [
-            'proyecto' => $proyecto,
-            'ingresos' => $ingresos,
-            'resumen' => $resumen,
-            'buscar' => $buscar,
-            'fecha' => $fecha,
-            'desde' => $desde,
-            'hasta' => $hasta,
-            'tipo' => $tipo,
-            'origen' => $origen,
-            'clienteId' => $clienteId,
-            'montoMin' => $montoMin,
-            'montoMax' => $montoMax,
-            'tipos' => Ingreso::TIPOS,
-            'origenes' => Ingreso::ORIGENES,
-            'clientes' => $proyecto->clientes()->orderBy('apellidos')->orderBy('nombres')->get(),
+            'proyecto'        => $proyecto,
+            'ingresos'        => $ingresos,
+            'resumen'         => $resumen,
+            'ingresosPorDia'  => $ingresosPorDia,
+            'ingresosPorMes'  => $ingresosPorMes,
+            'ultimosIngresos' => $ultimosIngresos,
+            'buscar'          => $buscar,
+            'fecha'           => $fecha,
+            'desde'           => $desde,
+            'hasta'           => $hasta,
+            'tipo'            => $tipo,
+            'origen'          => $origen,
+            'clienteId'       => $clienteId,
+            'montoMin'        => $montoMin,
+            'montoMax'        => $montoMax,
+            'tipos'           => Ingreso::TIPOS,
+            'origenes'        => Ingreso::ORIGENES,
+            'clientes'        => $proyecto->clientes()->orderBy('apellidos')->orderBy('nombres')->get(),
         ]);
     }
 

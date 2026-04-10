@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Documento;
 use App\Models\Lote;
 use App\Models\Proyecto;
 use Illuminate\Http\JsonResponse;
@@ -53,6 +54,12 @@ class ProyectoClienteController extends Controller
             'anulado' => $proyecto->clientes()->where('estado', 'anulado')->count(),
         ];
 
+        $lotesCatalog = $proyecto->lotes()
+            ->with('clienteActivo')
+            ->orderBy('manzana')
+            ->orderBy('numero')
+            ->get(['id', 'manzana', 'numero', 'codigo', 'precio_inicial', 'estado']);
+
         return view('admin.proyectos.clientes.index', [
             'proyecto' => $proyecto,
             'clientes' => $clientes,
@@ -62,6 +69,7 @@ class ProyectoClienteController extends Controller
             'resumen' => $resumen,
             'modalidades' => Cliente::MODALIDADES,
             'estados' => Cliente::ESTADOS,
+            'lotesCatalog' => $lotesCatalog,
         ]);
     }
 
@@ -133,7 +141,7 @@ class ProyectoClienteController extends Controller
         ]);
     }
 
-    public function update(Request $request, Proyecto $proyecto, Cliente $cliente): RedirectResponse
+    public function update(Request $request, Proyecto $proyecto, Cliente $cliente): RedirectResponse|JsonResponse
     {
         $data = $this->validatePayload($request, $proyecto, $cliente);
 
@@ -174,6 +182,13 @@ class ProyectoClienteController extends Controller
             }
         });
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'mensaje' => 'Cliente actualizado correctamente.',
+            ]);
+        }
+
         return redirect()
             ->route('admin.proyectos.clientes', $proyecto)
             ->with('success', 'Cliente actualizado correctamente.');
@@ -181,16 +196,34 @@ class ProyectoClienteController extends Controller
 
     public function destroy(Proyecto $proyecto, Cliente $cliente): JsonResponse
     {
-        $cliente->loadMissing(['lote', 'documentos']);
+        $cliente->loadMissing(['lote', 'documentos', 'pagos.documentos']);
 
         DB::transaction(function () use ($cliente) {
+            $paymentIds = $cliente->pagos->pluck('id')->all();
             $rutas = $cliente->documentos
                 ->pluck('ruta_archivo')
+                ->merge(
+                    $cliente->pagos
+                        ->flatMap(fn ($pago) => $pago->documentos->pluck('ruta_archivo'))
+                )
                 ->filter()
+                ->unique()
+                ->values()
                 ->all();
 
             $lote = $cliente->lote;
-            $cliente->documentos()->delete();
+
+            $documentosQuery = Documento::query()->where('cliente_id', $cliente->id);
+
+            if ($paymentIds !== []) {
+                $documentosQuery->orWhereIn('pago_id', $paymentIds);
+            }
+
+            $documentosQuery->delete();
+            $cliente->ingresos()->delete();
+            $cliente->comentarios()->delete();
+            $cliente->cronogramaPagos()->delete();
+            $cliente->pagos()->delete();
             $cliente->delete();
 
             DB::afterCommit(function () use ($rutas) {
@@ -207,11 +240,47 @@ class ProyectoClienteController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function desistido(Proyecto $proyecto, Cliente $cliente): JsonResponse
+    public function desistido(Request $request, Proyecto $proyecto, Cliente $cliente): JsonResponse
     {
-        DB::transaction(function () use ($cliente) {
+        $data = $request->validate([
+            'monto_devolucion' => ['nullable', 'numeric', 'min:0'],
+            'motivo' => ['required', 'string', 'max:1000'],
+        ], [], [
+            'monto_devolucion' => 'monto de devolucion',
+        ]);
+
+        $montoDevolucion = round((float) ($data['monto_devolucion'] ?? 0), 2);
+        $motivo = trim((string) $data['motivo']);
+
+        DB::transaction(function () use ($request, $proyecto, $cliente, $montoDevolucion, $motivo) {
             $cliente->loadMissing('lote');
-            $cliente->update(['estado' => 'desistido']);
+            $observaciones = trim((string) $cliente->observaciones);
+            $notaDesistimiento = 'Desistimiento (' . now()->format('d/m/Y H:i') . '): ' . $motivo;
+
+            $cliente->update([
+                'estado' => 'desistido',
+                'estado_cobranza' => 'sin_pagos',
+                'observaciones' => $observaciones !== ''
+                    ? $observaciones . PHP_EOL . $notaDesistimiento
+                    : $notaDesistimiento,
+            ]);
+
+            if ($montoDevolucion > 0) {
+                $proyecto->egresos()->create([
+                    'fecha' => now()->toDateString(),
+                    'categoria_principal' => 'Otros',
+                    'categoria' => 'Otros',
+                    'monto' => $montoDevolucion,
+                    'descripcion' => 'Devolucion por desistimiento de ' . $cliente->nombre_completo
+                        . ($cliente->lote ? ' - Mz. ' . $cliente->lote->manzana . ' Lt. ' . $cliente->lote->numero : ''),
+                    'observaciones' => $motivo,
+                    'responsable' => $this->actorName($request),
+                    'fuente_dinero' => 'caja_general',
+                    'estado' => 'registrado',
+                    'creado_por' => $this->actorName($request),
+                    'updated_by' => $this->actorName($request),
+                ]);
+            }
 
             if ($cliente->lote) {
                 $this->refreshLoteEstado($cliente->lote->fresh());
@@ -221,6 +290,7 @@ class ProyectoClienteController extends Controller
         return response()->json([
             'ok' => true,
             'estado' => 'desistido',
+            'egreso_registrado' => $montoDevolucion > 0,
         ]);
     }
 
@@ -403,5 +473,10 @@ class ProyectoClienteController extends Controller
                 ? ($clienteActivo->fecha_registro ?? now()->toDateString())
                 : null,
         ]);
+    }
+
+    protected function actorName(Request $request): string
+    {
+        return $request->user()?->name ?? 'Administrador';
     }
 }

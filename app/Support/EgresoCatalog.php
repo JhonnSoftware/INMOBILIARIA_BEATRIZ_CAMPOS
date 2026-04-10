@@ -7,24 +7,25 @@ class EgresoCatalog
     public const CATEGORIAS = [
         'Marketing' => [
             'Marketing Digital',
-            'Marketing Fisico',
+            'Marketing Físico',
             'Merchandising',
             'Pasajes Marketing',
-            'Ferias Inmobiliarias',
         ],
         'Administrativo' => [
             'Administrativos',
+            'Tour Inmobiliario',
             'Gasto Fijo',
+            'Ferias Inmobiliarias',
             'Planilla',
             'Pasajes Administrativo',
+            'Desistimientos',
         ],
         'Ventas' => [
-            'Tour Inmobiliario',
-            'Comision',
+            'Comisión',
             'Movilidad',
             'Pasajes Ventas',
-            'Viaticos',
-            'Alimentacion',
+            'Viáticos',
+            'Alimentación',
         ],
         'Terreno' => [
             'Costo de Terreno',

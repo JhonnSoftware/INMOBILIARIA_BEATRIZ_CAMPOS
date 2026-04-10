@@ -58,47 +58,74 @@ class ProyectoDocumentoController extends Controller
                 });
             });
 
-        $documentos = (clone $query)
-            ->orderByDesc('fecha_documento')
-            ->orderByDesc('id')
-            ->paginate(12)
-            ->withQueryString();
+        $manzanaFiltro = trim((string) $request->input('manzana'));
+        $loteIdFiltro  = $request->filled('lote_id') ? (int) $request->input('lote_id') : null;
 
-        $resumen = [
-            'total' => (clone $query)->count(),
-            'proyecto' => (clone $query)->where('contexto', 'proyecto')->count(),
-            'lote' => (clone $query)->where('contexto', 'lote')->count(),
-            'cliente' => (clone $query)->where('contexto', 'cliente')->count(),
-            'operacion' => (clone $query)->where('contexto', 'operacion')->count(),
-        ];
+        $baseQuery = $proyecto->documentos()
+            ->with(['lote'])
+            ->where('estado', 'activo')
+            ->when($manzanaFiltro !== '', function ($b) use ($manzanaFiltro) {
+                $b->whereHas('lote', fn ($q) => $q->where('manzana', $manzanaFiltro));
+            })
+            ->when($loteIdFiltro, fn ($b) => $b->where('lote_id', $loteIdFiltro));
+
+        $documentosGenerales = (clone $baseQuery)
+            ->where('tipo_documento', '!=', 'plano')
+            ->orderByDesc('fecha_documento')->orderByDesc('id')
+            ->get();
+
+        $planos = (clone $baseQuery)
+            ->where('tipo_documento', 'plano')
+            ->orderByDesc('fecha_documento')->orderByDesc('id')
+            ->get();
+
+        $lotes    = $proyecto->lotes()->orderBy('manzana')->orderBy('numero')->get();
+        $manzanas = $lotes->pluck('manzana')->unique()->sort()->values();
+
+        $lotesPorManzana = $lotes->groupBy('manzana')->map(fn ($group) => $group->map(fn ($l) => [
+            'id' => $l->id, 'numero' => $l->numero, 'codigo' => $l->codigo,
+        ])->values())->all();
 
         return view('admin.proyectos.documentos.index', [
-            'proyecto' => $proyecto,
-            'documentos' => $documentos,
-            'resumen' => $resumen,
-            'buscar' => $buscar,
-            'tipoDocumento' => $tipoDocumento,
-            'contexto' => $contexto,
-            'estado' => $estado,
-            'clienteId' => $clienteId,
-            'loteId' => $loteId,
-            'fechaDocumento' => $fechaDocumento,
-            'contextos' => DocumentoCatalog::CONTEXTOS,
-            'tiposDocumento' => DocumentoCatalog::TIPOS,
-            'estados' => DocumentoCatalog::ESTADOS,
-            'clientes' => $proyecto->clientes()->orderBy('apellidos')->orderBy('nombres')->get(),
-            'lotes' => $proyecto->lotes()->orderBy('manzana')->orderBy('numero')->get(),
+            'proyecto'           => $proyecto,
+            'documentosGenerales'=> $documentosGenerales,
+            'planos'             => $planos,
+            'lotes'              => $lotes,
+            'manzanas'           => $manzanas,
+            'lotesPorManzana'    => $lotesPorManzana,
+            'manzanaFiltro'      => $manzanaFiltro,
+            'loteIdFiltro'       => $loteIdFiltro,
         ]);
     }
 
-    public function create(Proyecto $proyecto): View
+    public function create(Request $request, Proyecto $proyecto): View
     {
+        $contexto = $request->string('contexto')->toString();
+        $contexto = array_key_exists($contexto, DocumentoCatalog::CONTEXTOS) ? $contexto : 'proyecto';
+        $tipoDocumento = $request->string('tipo_documento')->toString();
+        $tipoDocumento = array_key_exists($tipoDocumento, DocumentoCatalog::TIPOS) ? $tipoDocumento : 'anexo';
+
+        $clienteId = $request->filled('cliente_id') ? (int) $request->input('cliente_id') : null;
+        $cliente = $clienteId
+            ? $proyecto->clientes()->with('lote')->find($clienteId)
+            : null;
+
+        $loteId = $request->filled('lote_id') ? (int) $request->input('lote_id') : ($cliente?->lote_id ?: null);
+        $lote = $loteId
+            ? $proyecto->lotes()->find($loteId)
+            : null;
+
         return view('admin.proyectos.documentos.create', [
             'proyecto' => $proyecto,
             'documento' => new Documento([
-                'contexto' => 'proyecto',
-                'tipo_documento' => 'anexo',
-                'fecha_documento' => now()->toDateString(),
+                'contexto' => $contexto,
+                'tipo_documento' => $tipoDocumento,
+                'titulo' => trim((string) $request->input('titulo')),
+                'descripcion' => $request->filled('descripcion') ? trim((string) $request->input('descripcion')) : null,
+                'fecha_documento' => $request->filled('fecha_documento') ? $request->input('fecha_documento') : now()->toDateString(),
+                'cliente_id' => $cliente?->id,
+                'lote_id' => $lote?->id,
+                'pago_id' => $request->filled('pago_id') ? (int) $request->input('pago_id') : null,
                 'estado' => 'activo',
             ]),
             'contextos' => DocumentoCatalog::CONTEXTOS,
@@ -129,7 +156,7 @@ class ProyectoDocumentoController extends Controller
                     'pago_id' => $pago?->id,
                     'contexto' => $data['contexto'],
                     'tipo_documento' => $data['tipo_documento'],
-                    'titulo' => $data['titulo'],
+                    'titulo' => $data['titulo'] ?: pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME),
                     'descripcion' => $data['descripcion'] ?? null,
                     'nombre_original' => $archivo->getClientOriginalName(),
                     'nombre_archivo' => $storedName,
@@ -205,7 +232,7 @@ class ProyectoDocumentoController extends Controller
         ], [
             'contexto' => ['required', Rule::in(array_keys(DocumentoCatalog::CONTEXTOS))],
             'tipo_documento' => ['required', Rule::in(array_keys(DocumentoCatalog::TIPOS))],
-            'titulo' => ['required', 'string', 'max:191'],
+            'titulo' => ['nullable', 'string', 'max:191'],
             'descripcion' => ['nullable', 'string'],
             'fecha_documento' => ['nullable', 'date'],
             'cliente_id' => [
