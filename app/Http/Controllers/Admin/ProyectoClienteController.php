@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\Documento;
+use App\Models\Colaborador;
 use App\Models\Lote;
 use App\Models\Proyecto;
 use Illuminate\Http\JsonResponse;
@@ -86,6 +87,7 @@ class ProyectoClienteController extends Controller
             'lotes' => $this->availableLotes($proyecto),
             'modalidades' => Cliente::MODALIDADES,
             'estados' => Cliente::ESTADOS,
+            'asesores' => $this->activeAsesores(),
         ]);
     }
 
@@ -96,10 +98,11 @@ class ProyectoClienteController extends Controller
         DB::transaction(function () use ($data, $proyecto) {
             $lote = $this->resolveLote($proyecto, (int) $data['lote_id']);
             $precioLote = (float) $lote->precio_inicial;
-            $cuotaInicial = $this->normalizeCuotaInicial($precioLote, $data['modalidad'], $data['cuota_inicial'] ?? null);
+            $cuotaInicial = $this->normalizeCuotaInicial($precioLote, $data['modalidad'], $data['monto_reserva'] ?? null);
             $saldo = $this->calculateSaldo($precioLote, $data['modalidad'], $cuotaInicial);
 
             $proyecto->clientes()->create([
+                'asesor_id' => $data['asesor_id'] ?? null,
                 'lote_id' => $lote->id,
                 'nombres' => $data['nombres'],
                 'apellidos' => $data['apellidos'],
@@ -109,15 +112,15 @@ class ProyectoClienteController extends Controller
                 'direccion' => $data['direccion'] ?? null,
                 'fecha_registro' => $data['fecha_registro'],
                 'modalidad' => $data['modalidad'],
-                'estado' => $data['estado'],
-                'estado_cobranza' => $this->resolveEstadoCobranza($data['modalidad'], $data['estado'], $saldo),
+                'estado' => 'activo',
+                'estado_cobranza' => $this->resolveEstadoCobranza($data['modalidad'], 'activo', $saldo),
                 'precio_lote' => $precioLote,
                 'total_pagado' => round(max($precioLote - $saldo, 0), 2),
                 'cuota_inicial' => $cuotaInicial,
-                'cuota_mensual' => $this->normalizeCuotaMensual($data['modalidad'], $data['cuota_mensual'] ?? null),
+                'cuota_mensual' => null,
                 'numero_cuotas' => null,
                 'saldo_pendiente' => $saldo,
-                'observaciones' => $data['observaciones'] ?? null,
+                'observaciones' => null,
             ]);
 
             $this->refreshLoteEstado($lote->fresh());
@@ -138,6 +141,7 @@ class ProyectoClienteController extends Controller
             'lotes' => $this->availableLotes($proyecto, $cliente),
             'modalidades' => Cliente::MODALIDADES,
             'estados' => Cliente::ESTADOS,
+            'asesores' => $this->activeAsesores(),
         ]);
     }
 
@@ -151,10 +155,11 @@ class ProyectoClienteController extends Controller
             $loteAnterior = $cliente->lote;
             $loteNuevo = $this->resolveLote($proyecto, (int) $data['lote_id']);
             $precioLote = (float) $loteNuevo->precio_inicial;
-            $cuotaInicial = $this->normalizeCuotaInicial($precioLote, $data['modalidad'], $data['cuota_inicial'] ?? null);
+            $cuotaInicial = $this->normalizeCuotaInicial($precioLote, $data['modalidad'], $data['monto_reserva'] ?? null);
             $saldo = $this->calculateSaldo($precioLote, $data['modalidad'], $cuotaInicial);
 
             $cliente->update([
+                'asesor_id' => $data['asesor_id'] ?? null,
                 'lote_id' => $loteNuevo->id,
                 'nombres' => $data['nombres'],
                 'apellidos' => $data['apellidos'],
@@ -164,15 +169,15 @@ class ProyectoClienteController extends Controller
                 'direccion' => $data['direccion'] ?? null,
                 'fecha_registro' => $data['fecha_registro'],
                 'modalidad' => $data['modalidad'],
-                'estado' => $data['estado'],
-                'estado_cobranza' => $this->resolveEstadoCobranza($data['modalidad'], $data['estado'], $saldo),
+                'estado' => $cliente->estado,
+                'estado_cobranza' => $this->resolveEstadoCobranza($data['modalidad'], $cliente->estado, $saldo),
                 'precio_lote' => $precioLote,
                 'total_pagado' => round(max($precioLote - $saldo, 0), 2),
                 'cuota_inicial' => $cuotaInicial,
-                'cuota_mensual' => $this->normalizeCuotaMensual($data['modalidad'], $data['cuota_mensual'] ?? null),
+                'cuota_mensual' => $cliente->cuota_mensual,
                 'numero_cuotas' => $cliente->numero_cuotas,
                 'saldo_pendiente' => $saldo,
-                'observaciones' => $data['observaciones'] ?? null,
+                'observaciones' => $cliente->observaciones,
             ]);
 
             $this->refreshLoteEstado($loteNuevo->fresh());
@@ -297,6 +302,7 @@ class ProyectoClienteController extends Controller
     protected function validatePayload(Request $request, Proyecto $proyecto, ?Cliente $cliente = null): array
     {
         $payload = [
+            'asesor_id' => $request->filled('asesor_id') ? (int) $request->input('asesor_id') : null,
             'nombres' => trim((string) $request->input('nombres')),
             'apellidos' => trim((string) $request->input('apellidos')),
             'dni' => preg_replace('/\D+/', '', (string) $request->input('dni')),
@@ -306,13 +312,11 @@ class ProyectoClienteController extends Controller
             'lote_id' => $request->input('lote_id'),
             'fecha_registro' => $request->input('fecha_registro'),
             'modalidad' => $request->input('modalidad'),
-            'estado' => $request->input('estado'),
-            'cuota_inicial' => $request->filled('cuota_inicial') ? $request->input('cuota_inicial') : null,
-            'cuota_mensual' => $request->filled('cuota_mensual') ? $request->input('cuota_mensual') : null,
-            'observaciones' => $request->filled('observaciones') ? trim((string) $request->input('observaciones')) : null,
+            'monto_reserva' => $request->filled('monto_reserva') ? $request->input('monto_reserva') : null,
         ];
 
         $validated = validator($payload, [
+            'asesor_id' => ['nullable', 'integer', Rule::exists('colaboradores', 'id')],
             'nombres' => ['required', 'string', 'max:150'],
             'apellidos' => ['required', 'string', 'max:150'],
             'dni' => [
@@ -330,15 +334,10 @@ class ProyectoClienteController extends Controller
             ],
             'fecha_registro' => ['required', 'date'],
             'modalidad' => ['required', Rule::in(Cliente::MODALIDADES)],
-            'estado' => ['required', Rule::in(Cliente::ESTADOS)],
-            'cuota_inicial' => ['nullable', 'numeric', 'min:0'],
-            'cuota_mensual' => ['nullable', 'numeric', 'min:0'],
-            'observaciones' => ['nullable', 'string'],
+            'monto_reserva' => ['nullable', 'numeric', 'min:0'],
         ], [], [
             'lote_id' => 'lote',
             'fecha_registro' => 'fecha de registro',
-            'cuota_inicial' => 'cuota inicial',
-            'cuota_mensual' => 'cuota mensual',
         ])->after(function ($validator) use ($payload, $proyecto, $cliente) {
             $lote = isset($payload['lote_id'])
                 ? Lote::query()
@@ -357,18 +356,12 @@ class ProyectoClienteController extends Controller
                 ->when($cliente, fn ($query) => $query->whereKeyNot($cliente->id))
                 ->exists();
 
-            if ($otroActivo && (($payload['estado'] ?? null) === 'activo' || ! $esMismoLote)) {
+            if ($otroActivo && ! $esMismoLote) {
                 $validator->errors()->add('lote_id', 'El lote seleccionado ya esta asignado a otro cliente activo.');
             }
 
             if (! $esMismoLote && $lote->estado !== 'Libre') {
                 $validator->errors()->add('lote_id', 'Solo puedes seleccionar lotes libres del proyecto actual.');
-            }
-
-            $cuotaInicial = (float) ($payload['cuota_inicial'] ?: 0);
-
-            if ($cuotaInicial > (float) $lote->precio_inicial) {
-                $validator->errors()->add('cuota_inicial', 'La cuota inicial no puede ser mayor al precio del lote.');
             }
         })->validate();
 
@@ -473,6 +466,14 @@ class ProyectoClienteController extends Controller
                 ? ($clienteActivo->fecha_registro ?? now()->toDateString())
                 : null,
         ]);
+    }
+
+    protected function activeAsesores()
+    {
+        return Colaborador::whereIn('area', ['Asesor', 'Asesor de Ventas'])
+            ->orderBy('apellido')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'apellido']);
     }
 
     protected function actorName(Request $request): string

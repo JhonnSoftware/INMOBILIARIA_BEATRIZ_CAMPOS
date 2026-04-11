@@ -82,14 +82,35 @@
     .client-empty-center strong{font-size:16px;display:block;margin-bottom:6px;color:var(--text);}
 
     /* ── Payment form grid ── */
-    .pf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-    .pf-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-    @media(max-width:1000px){.pf-grid{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:600px){.pf-grid,.pf-grid-2{grid-template-columns:1fr;}}
+    .pf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+    .pf-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+    .pf-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+    @media(max-width:1000px){.pf-grid{grid-template-columns:repeat(2,1fr);}.pf-grid-3{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:600px){.pf-grid,.pf-grid-2,.pf-grid-3{grid-template-columns:1fr;}}
+
+    /* ── Payment form fields ── */
+    .panel-body .form-group{display:flex;flex-direction:column;gap:6px;}
+    .panel-body .form-group label{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--gray);}
+    .panel-body .form-group input,
+    .panel-body .form-group select,
+    .panel-body .form-group textarea{
+        width:100%;border:1.5px solid #e2e8f0;background:#f8faff;border-radius:12px;
+        padding:12px 16px;font:600 13px 'Poppins',sans-serif;color:var(--text);
+        outline:none;transition:.2s;box-sizing:border-box;
+    }
+    .panel-body .form-group input:focus,
+    .panel-body .form-group select:focus,
+    .panel-body .form-group textarea:focus{border-color:#29b6d8;background:#fff;box-shadow:0 0 0 3px rgba(41,182,216,.1);}
+    .panel-body .form-group input::placeholder,
+    .panel-body .form-group textarea::placeholder{color:#a0aec0;font-weight:500;}
+    .panel-body .form-group select{cursor:pointer;appearance:auto;}
+    .panel-body .helper-text{font-size:11.5px;color:var(--gray);line-height:1.6;margin-top:4px;}
+    .panel-body .helper-text strong{color:#1d4ed8;}
+    .panel-body .error-text{font-size:11px;color:#dc2626;margin-top:2px;}
 
     /* ── Botón registrar pago full-width ── */
-    .btn-registrar-pago{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:22px;padding:16px;border:none;border-radius:0 0 14px 14px;background:linear-gradient(135deg,#29b6d8,#1a8fbf);color:#fff;font:800 14px 'Poppins',sans-serif;letter-spacing:.8px;cursor:pointer;transition:.2s;}
-    .btn-registrar-pago:hover{background:linear-gradient(135deg,#1a8fbf,#1270a0);transform:translateY(-1px);}
+    .btn-registrar-pago{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:24px;padding:17px;border:none;border-radius:14px;background:linear-gradient(135deg,#29b6d8,#1a8fbf);color:#fff;font:800 14px 'Poppins',sans-serif;letter-spacing:1px;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(41,182,216,.35);}
+    .btn-registrar-pago:hover{background:linear-gradient(135deg,#1a8fbf,#1270a0);transform:translateY(-1px);box-shadow:0 6px 20px rgba(41,182,216,.45);}
 
     /* ── Panel Card (Datos / Pago / Historial) ── */
     .panel-card{border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.07);border:1.5px solid var(--border);}

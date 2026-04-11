@@ -1,17 +1,22 @@
 @php
-    $isEditingPayment = $payment->exists;
-    $selectedTipo     = old('tipo_pago', $payment->tipo_pago ?: 'cuota');
-    $selectedMonto    = old('monto', $payment->monto ?: $selectedClient->cuota_mensual);
-    $selectedCuotas   = old('numero_cuotas', $payment->numero_cuotas ?: $selectedClient->numero_cuotas);
+    $isEditingPayment  = $payment->exists;
+    $selectedTipo      = old('tipo_pago', $payment->tipo_pago ?: 'cuota');
+    $selectedMonto     = old('monto', $payment->monto ?: $selectedClient->cuota_mensual);
+    $selectedCuotas    = old('numero_cuotas', $payment->numero_cuotas ?: $selectedClient->numero_cuotas ?: 12);
     $selectedFechaPago = old('fecha_pago', optional($payment->fecha_pago)->format('Y-m-d') ?: now()->toDateString());
+    $precioLote        = (float) $selectedClient->precio_lote;
+    $saldoPendiente    = (float) $selectedClient->saldo_pendiente;
+    $reservaPrevia     = (float) $selectedClient->cuota_inicial;
 
     $tiposLabel = [
-        'cuota'       => 'Pago Regular de Cuota',
-        'inicial'     => 'Financiado (Nuevo/Cambio)',
-        'contado'     => 'Al Contado',
-        'reserva'     => 'Reservado',
-        'ajuste_cuota'=> 'Ajustar Cuota Mensual',
+        'cuota'        => 'Pago Regular de Cuota',
+        'inicial'      => 'Financiado (Nuevo/Cambio)',
+        'contado'      => 'Al Contado',
+        'reserva'      => 'Reservado',
+        'ajuste_cuota' => 'Ajustar Cuota Mensual',
     ];
+
+    $opcionesCuotas = range(1, 60);
 @endphp
 
 <form
@@ -36,11 +41,7 @@
         <div class="form-group">
             <label for="monto">Cuota <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--gray);">(editable)</span></label>
             <input type="number" id="monto" name="monto" value="{{ $selectedMonto }}" min="0" step="0.01" placeholder="0.00">
-            @if($selectedClient->cuota_mensual)
-            <div class="helper-text" id="monto_helper">
-                Cuota mensual establecida: S/. {{ number_format((float)$selectedClient->cuota_mensual, 2, '.', ',') }}
-            </div>
-            @endif
+            <div class="helper-text" id="monto_helper"></div>
             @error('monto')<div class="error-text">{{ $message }}</div>@enderror
         </div>
 
@@ -69,50 +70,68 @@
 
     </div>
 
-    {{-- ── Campos extra según tipo (solo para inicial, reserva, ajuste) ── --}}
+    {{-- ── Campos extra según tipo ── --}}
     <div id="extra-fields">
 
-        {{-- Financiado: pago inicial + número de cuotas --}}
-        <div class="pf-grid-2 tipo-extra tipo-extra-inicial" style="display:none;margin-top:14px;">
-            <div class="form-group">
-                <label for="pago_inicial">Pago inicial</label>
-                <input type="number" id="pago_inicial" name="pago_inicial" value="{{ old('pago_inicial') }}" min="0" step="0.01" placeholder="0.00">
-                <div class="helper-text">Monto de la cuota inicial del financiamiento.</div>
-                @error('pago_inicial')<div class="error-text">{{ $message }}</div>@enderror
-            </div>
-            <div class="form-group">
-                <label for="numero_cuotas_inicial">Número de cuotas</label>
-                <input type="number" id="numero_cuotas_inicial" name="numero_cuotas" value="{{ $selectedCuotas }}" min="1" max="360">
-                <div class="helper-text">Total de cuotas del nuevo plan.</div>
-                @error('numero_cuotas')<div class="error-text">{{ $message }}</div>@enderror
+        {{-- Financiado (Nuevo/Cambio): Número de Cuotas | Pago Inicial | Notas --}}
+        <div class="tipo-extra tipo-extra-inicial" style="display:none;margin-top:14px;">
+            <div class="pf-grid-3">
+                <div class="form-group">
+                    <label for="numero_cuotas_inicial">Número de Cuotas</label>
+                    <select id="numero_cuotas_inicial" name="numero_cuotas">
+                        @foreach($opcionesCuotas as $n)
+                        <option value="{{ $n }}" @selected((int)$selectedCuotas === $n)>{{ $n }} cuotas</option>
+                        @endforeach
+                    </select>
+                    @error('numero_cuotas')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label for="pago_inicial">Pago Inicial</label>
+                    <input type="number" id="pago_inicial" name="pago_inicial"
+                           value="{{ old('pago_inicial', $payment->pago_inicial ?? '') }}"
+                           min="0" step="0.01" placeholder="Ingrese pago inicial">
+                    @error('pago_inicial')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label for="notas">Notas</label>
+                    <input type="text" id="notas_inline" name="notas"
+                           value="{{ old('notas', $payment->notas) }}"
+                           placeholder="Observaciones adicionales">
+                </div>
             </div>
         </div>
 
-        {{-- Reserva: monto de reserva --}}
-        <div class="pf-grid-2 tipo-extra tipo-extra-reserva" style="display:none;margin-top:14px;">
-            <div class="form-group">
-                <label for="monto_reserva">Monto de reserva</label>
-                <input type="number" id="monto_reserva" name="monto_reserva" value="{{ old('monto_reserva') }}" min="0" step="0.01" placeholder="0.00">
-                @error('monto_reserva')<div class="error-text">{{ $message }}</div>@enderror
+        {{-- Reserva: monto de reserva + notas --}}
+        <div class="tipo-extra tipo-extra-reserva" style="display:none;margin-top:14px;">
+            <div class="pf-grid-2">
+                <div class="form-group">
+                    <label for="monto_reserva">Monto de Reserva</label>
+                    <input type="number" id="monto_reserva" name="monto_reserva" value="{{ old('monto_reserva') }}" min="0" step="0.01" placeholder="Ingrese monto de reserva">
+                    @error('monto_reserva')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label for="notas_reserva">Notas</label>
+                    <input type="text" id="notas_reserva" name="notas" value="{{ old('notas', $payment->notas) }}" placeholder="Observaciones adicionales">
+                </div>
             </div>
         </div>
 
-        {{-- Ajustar cuota: nuevo número de cuotas --}}
-        <div class="pf-grid-2 tipo-extra tipo-extra-ajuste" style="display:none;margin-top:14px;">
-            <div class="form-group">
-                <label for="numero_cuotas_ajuste">Nuevo número de cuotas</label>
-                <input type="number" id="numero_cuotas_ajuste" name="numero_cuotas" value="{{ $selectedCuotas }}" min="1" max="360">
-                <div class="helper-text">El monto ingresado será la nueva cuota mensual.</div>
-                @error('numero_cuotas')<div class="error-text">{{ $message }}</div>@enderror
+        {{-- Ajustar cuota: solo notas --}}
+        <div class="tipo-extra tipo-extra-ajuste" style="display:none;margin-top:14px;">
+            <div class="pf-grid-2">
+                <div class="form-group">
+                    <label for="notas_ajuste">Notas</label>
+                    <input type="text" id="notas_ajuste" name="notas" value="{{ old('notas', $payment->notas) }}" placeholder="Observaciones adicionales">
+                </div>
             </div>
         </div>
 
     </div>
 
-    {{-- ── Notas ── --}}
-    <div class="form-group" style="margin-top:14px;">
-        <label for="notas">Notas</label>
-        <textarea id="notas" name="notas" placeholder="Observaciones adicionales" style="min-height:80px;resize:vertical;">{{ old('notas', $payment->notas) }}</textarea>
+    {{-- ── Notas (para tipos que no son inicial) ── --}}
+    <div class="form-group notas-general" style="margin-top:14px;">
+        <label for="notas_general">Notas</label>
+        <textarea id="notas_general" name="notas" placeholder="Observaciones adicionales" style="min-height:80px;resize:vertical;">{{ old('notas', $payment->notas) }}</textarea>
         @error('notas')<div class="error-text">{{ $message }}</div>@enderror
     </div>
 
@@ -138,35 +157,108 @@
 @push('scripts')
 <script>
 (function () {
-    const tipo      = document.getElementById('tipo_pago');
-    const montoHelper = document.getElementById('monto_helper');
+    const tipo            = document.getElementById('tipo_pago');
+    const montoInput      = document.getElementById('monto');
+    const montoHelper     = document.getElementById('monto_helper');
+    const cuotasSelect    = document.getElementById('numero_cuotas_inicial');
+    const pagoInicialInput = document.getElementById('pago_inicial');
+    const notasGeneral    = document.querySelector('.notas-general');
+
+    const precioLote      = {{ $precioLote }};
+    const saldoPendiente  = {{ $saldoPendiente }};
+    const reservaPrevia   = {{ $reservaPrevia }};
+
+    function calcularCuotaSugerida() {
+        const cuotas       = parseInt(cuotasSelect?.value || 12);
+        const pagoAdicional = parseFloat(pagoInicialInput?.value || 0);
+        const totalReserva  = reservaPrevia + pagoAdicional;
+        const porFinanciar  = Math.max(precioLote - totalReserva, 0);
+        const sugerida      = cuotas > 0 ? (porFinanciar / cuotas) : 0;
+        return { cuotas, pagoAdicional, totalReserva, porFinanciar, sugerida };
+    }
+
+    function actualizarHelperInicial() {
+        if (!montoHelper) return;
+        const { cuotas, pagoAdicional, totalReserva, porFinanciar, sugerida } = calcularCuotaSugerida();
+
+        // Autorrellenar el campo cuota con el valor sugerido
+        montoInput.value = sugerida.toFixed(2);
+        montoInput.placeholder = 'Sugerida: S/. ' + sugerida.toFixed(2);
+
+        let desglose = 'Precio S/. ' + precioLote.toFixed(2);
+        if (reservaPrevia > 0) {
+            desglose += ' &minus; Reserva previa S/. ' + reservaPrevia.toFixed(2);
+        }
+        if (pagoAdicional > 0) {
+            desglose += ' &minus; Pago inicial S/. ' + pagoAdicional.toFixed(2);
+        }
+        desglose += ' = Por financiar S/. ' + porFinanciar.toFixed(2);
+
+        montoHelper.innerHTML =
+            '🔥 <strong>Cuota calculada: S/. ' + sugerida.toFixed(2) + ' (' + cuotas + ' cuotas)</strong><br>' +
+            '📊 <span>' + desglose + '</span>';
+    }
 
     function syncForm() {
         if (!tipo) return;
         const val = tipo.value;
 
-        // Ocultar todos los extras
         document.querySelectorAll('.tipo-extra').forEach(el => el.style.display = 'none');
 
+        // Notas general: ocultar cuando tiene su propio campo inline
+        if (notasGeneral) notasGeneral.style.display = (val === 'inicial' || val === 'reserva' || val === 'ajuste_cuota') ? 'none' : '';
+
         if (val === 'inicial') {
-            document.querySelectorAll('.tipo-extra-inicial').forEach(el => el.style.display = 'grid');
-            if (montoHelper) montoHelper.textContent = 'El pago inicial activa el financiamiento y recalcula el saldo.';
+            document.querySelectorAll('.tipo-extra-inicial').forEach(el => el.style.display = 'block');
+            actualizarHelperInicial();
+
         } else if (val === 'reserva') {
-            document.querySelectorAll('.tipo-extra-reserva').forEach(el => el.style.display = 'grid');
-            if (montoHelper) montoHelper.textContent = 'Puedes usar el campo Cuota o Monto de reserva.';
+            document.querySelectorAll('.tipo-extra-reserva').forEach(el => el.style.display = 'block');
+            const cuotaActual = {{ (float) ($selectedClient->cuota_mensual ?? 0) }};
+            montoInput.value = '';
+            montoInput.placeholder = 'Ingrese monto de reserva';
+            if (montoHelper) montoHelper.textContent = 'Ingrese la nueva cuota mensual (actual: S/. ' + cuotaActual.toFixed(2) + ')';
+
         } else if (val === 'contado') {
-            if (montoHelper) montoHelper.textContent = 'Si lo dejas vacío se tomará el saldo pendiente completo.';
+            montoInput.value = precioLote.toFixed(2);
+            montoInput.placeholder = 'S/. ' + precioLote.toFixed(2);
+            if (montoHelper) montoHelper.textContent = 'Precio completo del lote. Puedes editarlo si aplica descuento.';
+
         } else if (val === 'ajuste_cuota') {
-            document.querySelectorAll('.tipo-extra-ajuste').forEach(el => el.style.display = 'grid');
-            if (montoHelper) montoHelper.textContent = 'El monto ingresado será la nueva cuota mensual.';
+            document.querySelectorAll('.tipo-extra-ajuste').forEach(el => el.style.display = 'block');
+            const cuotaActual = {{ (float) ($selectedClient->cuota_mensual ?? 0) }};
+            montoInput.value = '';
+            montoInput.placeholder = 'Cuota actual: S/. ' + cuotaActual.toFixed(2);
+            if (montoHelper) montoHelper.textContent = 'Ingrese la nueva cuota mensual (actual: S/. ' + cuotaActual.toFixed(2) + ')';
+
+        } else {
+            // cuota regular
+            const cuotaMensual = {{ (float) ($selectedClient->cuota_mensual ?? 0) }};
+            montoInput.value = cuotaMensual > 0 ? cuotaMensual.toFixed(2) : '';
+            montoInput.placeholder = '0.00';
+            if (montoHelper && cuotaMensual > 0) {
+                montoHelper.textContent = 'Cuota mensual establecida: S/. ' + cuotaMensual.toFixed(2);
+            } else if (montoHelper) {
+                montoHelper.textContent = '';
+            }
         }
-        // cuota: no muestra campos extra
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         if (tipo) {
             tipo.addEventListener('change', syncForm);
             syncForm();
+        }
+        if (cuotasSelect) cuotasSelect.addEventListener('change', actualizarHelperInicial);
+        if (pagoInicialInput) pagoInicialInput.addEventListener('input', actualizarHelperInicial);
+
+        // Al hacer click en cuota con estado "Al Contado", autorellena el precio del lote
+        if (montoInput) {
+            montoInput.addEventListener('focus', function () {
+                if (tipo && tipo.value === 'contado' && (!this.value || parseFloat(this.value) === 0)) {
+                    this.value = precioLote.toFixed(2);
+                }
+            });
         }
     });
 })();

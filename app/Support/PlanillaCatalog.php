@@ -5,25 +5,34 @@ namespace App\Support;
 class PlanillaCatalog
 {
     public const ESTRUCTURA = [
-        'LEONGRUP SAC' => [
+        'BEATRIZ INMOBILIARIA SAC' => [
             'Administracion' => [
-                'Asesor de Ventas',
-                'Gerente de Ventas',
-                'Administracion 1',
-                'Administracion 2',
-                'Supervisora',
+                'Asesor',
+                'Administrador',
+                'Asistente Administrativo',
+            ],
+            'Arquitectura' => [
+                'Arquitecto',
+                'Dibujante',
+                'Proyectista',
             ],
             'Marketing' => [
-                'Audiovisual',
                 'Marketing Digital',
                 'Community Manager',
+                'Diseñador Grafico',
             ],
-        ],
-        'ESTELAR' => [
-            'Desarrollo de Software' => [
+            'Supervisor' => [
+                'Supervisor de Obra',
+                'Supervisor de Ventas',
+            ],
+            'Sistemas' => [
                 'Programador',
+                'Soporte Tecnico',
+            ],
+            'Desarrollo de Software' => [
+                'Desarrollador',
                 'QA',
-                'Disenador UX',
+                'Diseñador UX',
             ],
         ],
     ];

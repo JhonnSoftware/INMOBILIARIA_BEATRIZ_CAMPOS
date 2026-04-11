@@ -31,6 +31,7 @@ class Cliente extends Model
 
     protected $fillable = [
         'proyecto_id',
+        'asesor_id',
         'lote_id',
         'nombres',
         'apellidos',
@@ -64,6 +65,11 @@ class Cliente extends Model
     public function proyecto(): BelongsTo
     {
         return $this->belongsTo(Proyecto::class, 'proyecto_id');
+    }
+
+    public function asesor(): BelongsTo
+    {
+        return $this->belongsTo(Colaborador::class, 'asesor_id');
     }
 
     public function lote(): BelongsTo

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\Colaborador;
 use App\Models\Comentario;
 use App\Models\Documento;
 use App\Models\Proyecto;
@@ -16,21 +17,24 @@ class ClienteController extends Controller
     public function index(Proyecto $proyecto)
     {
         $clientes = $proyecto->clientes()->orderByDesc('created_at')->get();
+        $asesores = Colaborador::whereIn('area', ['Asesor', 'Asesor de Ventas'])
+            ->orderBy('apellido')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'apellido']);
 
-        return view('admin.clientes', compact('proyecto', 'clientes'));
+        return view('admin.clientes', compact('proyecto', 'clientes', 'asesores'));
     }
 
     public function store(Request $request, Proyecto $proyecto)
     {
         $data = $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
+            'nombres' => 'required|string|max:150',
+            'apellidos' => 'required|string|max:150',
             'dni' => 'required|string|max:20',
             'manzana' => 'nullable|string|max:10',
             'numero_lote' => 'nullable|string|max:20',
             'precio_lote' => 'nullable|numeric|min:0',
-            'cuota_mensual' => 'nullable|numeric|min:0',
-            'asesor' => 'nullable|string|max:100',
+            'asesor_id' => 'nullable|integer|exists:colaboradores,id',
             'fecha_registro' => 'nullable|date',
             'estado' => 'required|in:reservado,financiamiento,vendido,desistido',
             'telefono' => 'nullable|string|max:20',
@@ -49,14 +53,13 @@ class ClienteController extends Controller
     public function update(Request $request, Proyecto $proyecto, Cliente $cliente)
     {
         $data = $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
+            'nombres' => 'required|string|max:150',
+            'apellidos' => 'required|string|max:150',
             'dni' => 'required|string|max:20',
             'manzana' => 'nullable|string|max:10',
             'numero_lote' => 'nullable|string|max:20',
             'precio_lote' => 'nullable|numeric|min:0',
-            'cuota_mensual' => 'nullable|numeric|min:0',
-            'asesor' => 'nullable|string|max:100',
+            'asesor_id' => 'nullable|integer|exists:colaboradores,id',
             'fecha_registro' => 'nullable|date',
             'estado' => 'required|in:reservado,financiamiento,vendido,desistido',
             'telefono' => 'nullable|string|max:20',

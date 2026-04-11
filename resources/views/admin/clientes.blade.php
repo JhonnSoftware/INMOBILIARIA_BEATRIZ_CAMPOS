@@ -369,7 +369,7 @@
                         data-search="{{ strtolower($cliente->nombre . ' ' . $cliente->apellido . ' ' . $cliente->dni . ' ' . $cliente->telefono) }}"
                         id="row-{{ $cliente->id }}">
                         <td>
-                            <div class="client-name">{{ $cliente->nombre }} {{ $cliente->apellido }}</div>
+                            <div class="client-name">{{ $cliente->nombre_completo }}</div>
                             @if($cliente->telefono)
                             <div class="client-phone"><i class="fas fa-phone"></i> {{ $cliente->telefono }}</div>
                             @endif
@@ -393,7 +393,7 @@
                         <td>
                             <span class="estado-badge {{ $cliente->estado }}">{{ ucfirst($cliente->estado) }}</span>
                         </td>
-                        <td>{{ $cliente->asesor ?? '—' }}</td>
+                        <td>{{ optional($cliente->asesor)->nombre_completo ?? '—' }}</td>
                         <td>
                             <div class="actions">
                                 <button class="act-btn act-edit" title="Editar cliente"
@@ -447,11 +447,11 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Nombres <span>*</span></label>
-                        <input type="text" name="nombre" id="fNombre" class="form-control" placeholder="Ej: Jorge Luis" required>
+                        <input type="text" name="nombres" id="fNombre" class="form-control" placeholder="Ej: Jorge Luis" required>
                     </div>
                     <div class="form-group">
                         <label>Apellidos <span>*</span></label>
-                        <input type="text" name="apellido" id="fApellido" class="form-control" placeholder="Ej: Pérez García" required>
+                        <input type="text" name="apellidos" id="fApellido" class="form-control" placeholder="Ej: Pérez García" required>
                     </div>
                     <div class="form-group">
                         <label>DNI <span>*</span></label>
@@ -470,10 +470,6 @@
                         <input type="number" name="precio_lote" id="fPrecio" class="form-control" placeholder="Ej: 35000" step="0.01" min="0">
                     </div>
                     <div class="form-group">
-                        <label>Cuota Mensual (S/)</label>
-                        <input type="number" name="cuota_mensual" id="fCuota" class="form-control" placeholder="Ej: 1200" step="0.01" min="0">
-                    </div>
-                    <div class="form-group">
                         <label>Teléfono</label>
                         <input type="text" name="telefono" id="fTelefono" class="form-control" placeholder="Ej: 987654321">
                     </div>
@@ -486,8 +482,13 @@
                         <input type="date" name="fecha_registro" id="fFecha" class="form-control" value="{{ date('Y-m-d') }}">
                     </div>
                     <div class="form-group">
-                        <label>Asesor</label>
-                        <input type="text" name="asesor" id="fAsesor" class="form-control" placeholder="Nombre del asesor">
+                        <label>Asesor <span>*</span></label>
+                        <select name="asesor_id" id="fAsesor" class="form-control" required>
+                            <option value="">Selecciona un asesor</option>
+                            @foreach($asesores as $asesor)
+                            <option value="{{ $asesor->id }}">{{ $asesor->nombre_completo }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group form-full">
                         <label>Estado <span>*</span></label>
@@ -629,8 +630,8 @@ function abrirModalEditar(id, data){
     document.getElementById('btnGuardarTxt').textContent = 'Guardar Cambios';
     document.getElementById('formMethod').value = 'PUT';
     document.getElementById('formCliente').action = BASE + '/clientes/' + id;
-    document.getElementById('fNombre').value    = data.nombre      || '';
-    document.getElementById('fApellido').value  = data.apellido    || '';
+    document.getElementById('fNombre').value    = data.nombres     || '';
+    document.getElementById('fApellido').value  = data.apellidos   || '';
     document.getElementById('fDni').value       = data.dni         || '';
     document.getElementById('fManzana').value   = data.manzana     || '';
     document.getElementById('fLote').value      = data.numero_lote || '';
@@ -639,7 +640,7 @@ function abrirModalEditar(id, data){
     document.getElementById('fTelefono').value  = data.telefono    || '';
     document.getElementById('fDireccion').value = data.direccion   || '';
     document.getElementById('fFecha').value     = data.fecha_registro ? data.fecha_registro.split('T')[0] : '';
-    document.getElementById('fAsesor').value    = data.asesor      || '';
+    document.getElementById('fAsesor').value    = data.asesor_id   || '';
     document.getElementById('fEstado').value    = data.estado      || 'reservado';
     abrirModal('modalCliente');
 }
