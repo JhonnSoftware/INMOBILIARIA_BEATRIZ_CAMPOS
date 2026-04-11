@@ -1,7 +1,7 @@
 @extends('layouts.admin-main', ['currentModule' => 'usuarios'])
 
 @section('title', 'Usuarios del Sistema | BC Inmobiliaria')
-@section('topbar_title', 'Usuarios del <span>Sistema</span>')
+@section('topbar_title')Usuarios del <span>Sistema</span>@endsection
 @section('module_label', 'Usuarios del Sistema')
 @section('page_title', 'Usuarios del Sistema')
 @section('page_subtitle', 'Administra cuentas administrativas, roles base y estado de acceso del sistema dejando la estructura lista para la futura matriz de permisos por módulo.')

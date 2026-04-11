@@ -1,7 +1,7 @@
 @extends('layouts.admin-main', ['currentModule' => 'usuarios'])
 
 @section('title', 'Nuevo usuario | BC Inmobiliaria')
-@section('topbar_title', 'Usuarios del <span>Sistema</span>')
+@section('topbar_title')Usuarios del <span>Sistema</span>@endsection
 @section('module_label', 'Usuarios / Nuevo')
 @section('page_title', 'Registrar nuevo usuario')
 @section('page_subtitle', 'Crea una cuenta administrativa con rol, estado y contraseña segura usando el sistema de hash de Laravel.')

@@ -1,7 +1,7 @@
 @extends('layouts.admin-main', ['currentModule' => 'dashboard'])
 
 @section('title', 'Dashboard Principal | BC Inmobiliaria')
-@section('topbar_title', 'Dashboard <span>Principal</span>')
+@section('topbar_title')Dashboard <span>Principal</span>@endsection
 @section('module_label', 'Dashboard Principal')
 @section('page_title', 'Panel Principal')
 @section('page_subtitle', 'Administra proyectos, accesos corporativos y la operación general del sistema inmobiliario desde un solo lugar.')
@@ -12,12 +12,17 @@
 @endsection
 
 @php
-    $proyectos = $proyectos ?? collect();
-    $proyectosActivos = $proyectos->where('estado', 'activo')->count();
-    $totalLotes = (int) $proyectos->sum('lotes_count');
-    $ticketPromedio = $proyectos->isNotEmpty() ? $proyectos->avg('precio_base') : 0;
-    $usuarioActual = auth()->user();
-    $formErrors = $errors ?? new \Illuminate\Support\ViewErrorBag();
+    $proyectos         = $proyectos ?? collect();
+    $ultimosPagos      = $ultimosPagos ?? collect();
+    $clientesPorEstado = $clientesPorEstado ?? [];
+    $ingresosMes       = $ingresosMes ?? 0;
+    $egresosMes        = $egresosMes ?? 0;
+    $proyectosActivos  = $proyectos->where('estado', 'activo')->count();
+    $totalLotes        = (int) $proyectos->sum('lotes_count');
+    $ticketPromedio    = $proyectos->isNotEmpty() ? $proyectos->avg('precio_base') : 0;
+    $totalClientes     = array_sum($clientesPorEstado);
+    $usuarioActual     = auth()->user();
+    $formErrors        = $errors ?? new \Illuminate\Support\ViewErrorBag();
 @endphp
 
 @push('styles')
@@ -52,10 +57,37 @@
     .quick-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
     .quick-link{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--border);box-shadow:0 8px 22px rgba(15,23,42,.04);text-decoration:none;color:inherit;display:grid;gap:10px;transition:.2s;}
     .quick-link:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(15,23,42,.08);}
+    .quick-link.disabled{opacity:.55;pointer-events:none;cursor:not-allowed;}
     .quick-link .icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
     .quick-link strong{font-size:14px;font-weight:800;color:var(--text);}
     .quick-link span{font-size:12px;line-height:1.7;color:var(--gray);}
     .empty-projects{padding:42px 18px;text-align:center;color:var(--gray);}
+    /* ── Flujo de caja ── */
+    .caja-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+    .caja-item{border-radius:14px;padding:14px 16px;}
+    .caja-item.ing{background:#ecfdf5;border:1px solid #a7f3d0;}
+    .caja-item.egr{background:#fff1f2;border:1px solid #fecdd3;}
+    .caja-item .ci-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+    .caja-item.ing .ci-label{color:#15803d;}
+    .caja-item.egr .ci-label{color:#be123c;}
+    .caja-item .ci-val{font-size:20px;font-weight:900;color:var(--text);}
+    .caja-item .ci-sub{font-size:11px;color:var(--gray);margin-top:3px;}
+    /* ── Clientes estado ── */
+    .estado-list{display:grid;gap:8px;}
+    .estado-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--bg);}
+    .estado-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .estado-name{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+    .estado-count{font-size:13px;font-weight:800;color:var(--text);}
+    .estado-bar-wrap{width:80px;height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;}
+    .estado-bar{height:100%;border-radius:999px;}
+    /* ── Últimos pagos ── */
+    .pago-list{display:grid;gap:8px;}
+    .pago-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--bg);}
+    .pago-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .pago-info{flex:1;min-width:0;}
+    .pago-name{font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .pago-sub{font-size:11px;color:var(--gray);}
+    .pago-monto{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;}
     .empty-projects i{font-size:42px;display:block;margin-bottom:14px;opacity:.45;}
     .modal-overlay{position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.58);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
@@ -165,32 +197,173 @@
             </article>
         </section>
 
-        <section class="card content-card">
-            <div class="section-head">
-                <div class="section-title">Accesos <span>Rapidos</span></div>
+        {{-- ── Flujo de caja del mes ── --}}
+        <section class="card content-card" style="padding:20px 22px;">
+            <div class="section-head" style="margin-bottom:14px;">
+                <div class="section-title" style="font-size:15px;">Caja <span>del Mes</span></div>
+                <span style="font-size:11px;color:var(--gray);font-weight:600;">{{ now()->translatedFormat('F Y') }}</span>
             </div>
-
-            <div class="quick-links">
-                <a href="{{ route('admin.dashboard') }}" class="quick-link">
-                    <div class="icon" style="background:linear-gradient(135deg,#5533CC,#3D1F99);"><i class="fas fa-chart-pie"></i></div>
-                    <strong>Resumen general</strong>
-                    <span>Consulta el estado principal del sistema y los proyectos cargados.</span>
-                </a>
-
-                <a href="{{ route('admin.usuarios.index') }}" class="quick-link">
-                    <div class="icon" style="background:linear-gradient(135deg,#EE00BB,#C4009A);"><i class="fas fa-users-cog"></i></div>
-                    <strong>Usuarios del sistema</strong>
-                    <span>Administra cuentas, roles base y cambios de contraseña.</span>
-                </a>
-
-                <button type="button" class="quick-link" onclick="openNuevoProyectoModal()" style="border:none;text-align:left;cursor:pointer;font-family:'Poppins',sans-serif;">
-                    <div class="icon" style="background:linear-gradient(135deg,#10b981,#059669);"><i class="fas fa-plus"></i></div>
-                    <strong>Nuevo proyecto</strong>
-                    <span>Crea un proyecto y habilita automáticamente sus módulos base.</span>
-                </button>
+            <div class="caja-row">
+                <div class="caja-item ing">
+                    <div class="ci-label"><i class="fas fa-arrow-down"></i> Ingresos</div>
+                    <div class="ci-val">S/. {{ number_format((float)$ingresosMes, 0, '.', ',') }}</div>
+                    <div class="ci-sub">Total registrado</div>
+                </div>
+                <div class="caja-item egr">
+                    <div class="ci-label"><i class="fas fa-arrow-up"></i> Egresos</div>
+                    <div class="ci-val">S/. {{ number_format((float)$egresosMes, 0, '.', ',') }}</div>
+                    <div class="ci-sub">Total registrado</div>
+                </div>
+            </div>
+            @php $balance = $ingresosMes - $egresosMes; @endphp
+            <div style="padding:10px 14px;border-radius:12px;background:{{ $balance >= 0 ? '#ecfdf5' : '#fff1f2' }};display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;font-weight:700;color:var(--gray);">Balance neto</span>
+                <span style="font-size:16px;font-weight:900;color:{{ $balance >= 0 ? '#15803d' : '#be123c' }};">
+                    {{ $balance >= 0 ? '+' : '' }}S/. {{ number_format((float)$balance, 0, '.', ',') }}
+                </span>
             </div>
         </section>
+
+        {{-- ── Clientes por estado ── --}}
+        <section class="card content-card" style="padding:20px 22px;">
+            <div class="section-head" style="margin-bottom:14px;">
+                <div class="section-title" style="font-size:15px;">Clientes <span>por Estado</span></div>
+                <span style="font-size:11px;color:var(--gray);font-weight:600;">{{ $totalClientes }} total</span>
+            </div>
+            @php
+                $estadoConfig = [
+                    'reservado'      => ['color' => '#f59e0b', 'bg' => '#fef3c7', 'label' => 'Reservado'],
+                    'financiamiento' => ['color' => '#2563eb', 'bg' => '#dbeafe', 'label' => 'Financiamiento'],
+                    'pagado'         => ['color' => '#16a34a', 'bg' => '#dcfce7', 'label' => 'Pagado'],
+                    'desistido'      => ['color' => '#dc2626', 'bg' => '#fee2e2', 'label' => 'Desistido'],
+                ];
+            @endphp
+            <div class="estado-list">
+                @foreach($estadoConfig as $key => $cfg)
+                @php $count = $clientesPorEstado[$key] ?? 0; $pct = $totalClientes > 0 ? round($count / $totalClientes * 100) : 0; @endphp
+                <div class="estado-row">
+                    <div class="estado-dot" style="background:{{ $cfg['color'] }};"></div>
+                    <div class="estado-name">{{ $cfg['label'] }}</div>
+                    <div class="estado-bar-wrap">
+                        <div class="estado-bar" style="width:{{ $pct }}%;background:{{ $cfg['color'] }};"></div>
+                    </div>
+                    <div class="estado-count">{{ $count }}</div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+
+        {{-- ── Últimos pagos ── --}}
+        <section class="card content-card" style="padding:20px 22px;">
+            <div class="section-head" style="margin-bottom:14px;">
+                <div class="section-title" style="font-size:15px;">Últimos <span>Pagos</span></div>
+            </div>
+            @if($ultimosPagos->isEmpty())
+            <div style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                <i class="fas fa-receipt" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4;"></i>
+                Sin pagos registrados aún
+            </div>
+            @else
+            <div class="pago-list">
+                @foreach($ultimosPagos as $pago)
+                @php
+                    $iconMap = ['cuota'=>'fas fa-calendar-check','inicial'=>'fas fa-star','contado'=>'fas fa-money-bill','reserva'=>'fas fa-bookmark','ajuste_cuota'=>'fas fa-sliders'];
+                    $bgMap   = ['cuota'=>'#dbeafe','inicial'=>'#f3e8ff','contado'=>'#dcfce7','reserva'=>'#fef3c7','ajuste_cuota'=>'#f3f4f6'];
+                    $clrMap  = ['cuota'=>'#2563eb','inicial'=>'#7c3aed','contado'=>'#16a34a','reserva'=>'#d97706','ajuste_cuota'=>'#6b7280'];
+                    $tp = $pago->tipo_pago;
+                @endphp
+                <div class="pago-row">
+                    <div class="pago-icon" style="background:{{ $bgMap[$tp] ?? '#f3f4f6' }};color:{{ $clrMap[$tp] ?? '#6b7280' }};">
+                        <i class="{{ $iconMap[$tp] ?? 'fas fa-receipt' }}"></i>
+                    </div>
+                    <div class="pago-info">
+                        <div class="pago-name">{{ $pago->cliente?->nombre_completo ?? 'Cliente' }}</div>
+                        <div class="pago-sub">{{ $pago->proyecto?->nombre }} · {{ optional($pago->fecha_pago)->format('d/m/Y') }}</div>
+                    </div>
+                    <div class="pago-monto">S/. {{ number_format((float)$pago->monto, 0, '.', ',') }}</div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </section>
+
     </div>
+</section>
+
+<section style="display:grid;gap:22px;margin-top:22px;">
+    <section class="card content-card">
+        <div class="section-head">
+            <div class="section-title">Administracion <span>Central</span></div>
+        </div>
+
+        <div class="quick-links">
+            @if($usuarioActual?->isOwner())
+            <a href="{{ route('admin.usuarios.index') }}" class="quick-link">
+                <div class="icon" style="background:linear-gradient(135deg,#64748b,#334155);">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <strong>Usuarios del Sistema</strong>
+                <span>Gestiona accesos administrativos, roles base y estado de cuentas internas.</span>
+            </a>
+            @else
+            <span class="quick-link disabled">
+                <div class="icon" style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <strong>Usuarios del Sistema</strong>
+                <span>Disponible para cuentas con perfil dueno del sistema.</span>
+            </span>
+            @endif
+
+            <span class="quick-link disabled">
+                <div class="icon" style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <strong>Gestion Permisos</strong>
+                <span>Reservado para la futura matriz de permisos por modulo y trazabilidad.</span>
+            </span>
+        </div>
+    </section>
+
+    <section class="card content-card">
+        <div class="section-head">
+            <div class="section-title">Contabilidad <span>Corporativa</span></div>
+        </div>
+
+        <div class="quick-links">
+            <a href="{{ route('admin.contabilidad.general') }}" class="quick-link">
+                <div class="icon" style="background:linear-gradient(135deg,#111827,#5533CC);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <strong>Contabilidad General</strong>
+                <span>Abre la vista global para balances, resumen financiero y lectura ejecutiva corporativa.</span>
+            </a>
+
+            <a href="{{ route('admin.contabilidad.datos') }}" class="quick-link">
+                <div class="icon" style="background:linear-gradient(135deg,#0f172a,#0ea5e9);">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <strong>Datos Contables</strong>
+                <span>Centraliza catalogos, parametros y estructuras base para la operacion financiera.</span>
+            </a>
+
+            <a href="{{ route('admin.contabilidad.planilla') }}" class="quick-link">
+                <div class="icon" style="background:linear-gradient(135deg,#5f2c82,#ee00bb);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <strong>Planilla</strong>
+                <span>Prepara el flujo de personal, conceptos de pago y salida contable relacionada.</span>
+            </a>
+
+            <a href="{{ route('admin.contabilidad.proveedores') }}" class="quick-link">
+                <div class="icon" style="background:linear-gradient(135deg,#92400e,#f59e0b);">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <strong>Proveedores</strong>
+                <span>Controla terceros, documentos, obligaciones pendientes y cuentas por pagar.</span>
+            </a>
+        </div>
+    </section>
 </section>
 
 <div class="modal-overlay{{ $formErrors->has('nombre') ? ' open' : '' }}" id="nuevoProyectoModal">

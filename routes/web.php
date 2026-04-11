@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\ContabilidadController;
+use App\Http\Controllers\Admin\EgresosGeneralesController;
+use App\Http\Controllers\Admin\RequerimientoCajaChicaController;
+use App\Http\Controllers\Admin\PlantillaLotesController;
+use App\Http\Controllers\Admin\PlanillaController;
+use App\Http\Controllers\Admin\ProveedorController;
 use App\Http\Controllers\Admin\UsuarioSistemaController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\ProyectoLoteController;
@@ -42,6 +48,29 @@ Route::prefix('proyectos')->name('proyectos.')->group(function () {
 Route::prefix('admin')->middleware(['auth', 'active.user'])->name('admin.')->group(function () {
     Route::get('/', [ProyectoController::class, 'index'])->name('dashboard');
     Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
+
+    Route::prefix('contabilidad')->name('contabilidad.')->group(function () {
+        Route::get('/general', [ContabilidadController::class, 'general'])->name('general');
+        Route::get('/datos-contables', [ContabilidadController::class, 'datosContables'])->name('datos');
+        Route::get('/planilla', [PlanillaController::class, 'index'])->name('planilla');
+        Route::post('/planilla', [PlanillaController::class, 'store'])->name('planilla.store');
+        Route::put('/planilla/{colaborador}', [PlanillaController::class, 'update'])->name('planilla.update');
+        Route::delete('/planilla/{colaborador}', [PlanillaController::class, 'destroy'])->name('planilla.destroy');
+        Route::get('/planilla/{colaborador}/contrato', [PlanillaController::class, 'contrato'])->name('planilla.contrato');
+        Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores');
+        Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+        Route::put('/proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
+        Route::delete('/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+        Route::get('/proveedores/{proveedor}/contrato', [ProveedorController::class, 'contrato'])->name('proveedores.contrato');
+        Route::get('/egresos-generales', [EgresosGeneralesController::class, 'index'])->name('egresos-generales');
+        Route::get('/plantilla-lotes', [PlantillaLotesController::class, 'download'])->name('plantilla-lotes');
+        Route::get('/requerimientos-caja-chica', [RequerimientoCajaChicaController::class, 'index'])->name('requerimientos-caja-chica');
+        Route::post('/requerimientos-caja-chica', [RequerimientoCajaChicaController::class, 'store'])->name('requerimientos-caja-chica.store');
+        Route::get('/requerimientos-caja-chica/{requerimientoCajaChica}', [RequerimientoCajaChicaController::class, 'show'])->name('requerimientos-caja-chica.show');
+        Route::post('/requerimientos-caja-chica/{requerimientoCajaChica}/aprobar', [RequerimientoCajaChicaController::class, 'aprobar'])->name('requerimientos-caja-chica.aprobar');
+        Route::post('/requerimientos-caja-chica/{requerimientoCajaChica}/rechazar', [RequerimientoCajaChicaController::class, 'rechazar'])->name('requerimientos-caja-chica.rechazar');
+        Route::delete('/requerimientos-caja-chica/{requerimientoCajaChica}', [RequerimientoCajaChicaController::class, 'destroy'])->name('requerimientos-caja-chica.destroy');
+    });
 
     Route::middleware(['auth', 'active.user', 'role:dueno'])->group(function () {
         Route::get('/usuarios', [UsuarioSistemaController::class, 'index'])->name('usuarios.index');

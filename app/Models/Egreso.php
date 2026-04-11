@@ -50,6 +50,11 @@ class Egreso extends Model
         return $this->hasMany(EgresoArchivo::class, 'egreso_id')->orderByDesc('created_at');
     }
 
+    public function proveedor(): BelongsTo
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+
     public static function fuentesDinero(): array
     {
         return EgresoCatalog::FUENTES_DINERO;

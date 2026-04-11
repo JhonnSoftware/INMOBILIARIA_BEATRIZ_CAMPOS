@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
+use App\Models\Pago;
 use App\Models\Proyecto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProyectoController extends Controller
 {
@@ -15,7 +18,42 @@ class ProyectoController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('admin.dashboard', compact('proyectos'));
+        // Últimos pagos registrados (todos los proyectos)
+        $ultimosPagos = Pago::with(['cliente', 'proyecto'])
+            ->where('estado_pago', 'registrado')
+            ->orderByDesc('fecha_pago')
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get();
+
+        // Resumen de clientes por estado de cobranza
+        $clientesPorEstado = Cliente::where('estado', 'activo')
+            ->select('estado_cobranza', DB::raw('COUNT(*) as total'))
+            ->groupBy('estado_cobranza')
+            ->pluck('total', 'estado_cobranza')
+            ->all();
+
+        // Totales globales del mes actual
+        $mesInicio = now()->startOfMonth()->toDateString();
+        $mesFin    = now()->endOfMonth()->toDateString();
+
+        $ingresosMes = DB::table('ingresos')
+            ->where('estado', 'registrado')
+            ->whereBetween('fecha_ingreso', [$mesInicio, $mesFin])
+            ->sum('monto');
+
+        $egresosMes = DB::table('egresos')
+            ->where('estado', 'registrado')
+            ->whereBetween('fecha', [$mesInicio, $mesFin])
+            ->sum('monto');
+
+        return view('admin.dashboard', compact(
+            'proyectos',
+            'ultimosPagos',
+            'clientesPorEstado',
+            'ingresosMes',
+            'egresosMes',
+        ));
     }
 
     public function store(Request $request): RedirectResponse

@@ -19,8 +19,9 @@
             --sidebar-w:268px;
             --sb-bg:#ffffff;--sb-border:#ecedf5;
         }
+        html{overflow-x:hidden;}
         html,body{min-height:100%;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);}
-        body{display:flex;min-height:100vh;}
+        body{display:flex;min-height:100vh;width:100%;max-width:100vw;overflow-x:hidden;}
 
         /* ══ SIDEBAR ══ */
         .sidebar{
@@ -62,7 +63,7 @@
         .sb-logout-btn:hover{background:linear-gradient(135deg,var(--mg),var(--vt));border-color:transparent;color:#fff;}
 
         /* ══ MAIN ══ */
-        .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+        .main{margin-left:var(--sidebar-w);flex:1;min-width:0;max-width:calc(100vw - var(--sidebar-w));display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;}
 
         /* ══ TOPBAR ══ */
         .topbar{position:sticky;top:0;z-index:40;height:68px;background:#fff;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:0 2px 12px rgba(85,51,204,.04);}
@@ -74,7 +75,7 @@
         .topbar-user{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);}
 
         /* ══ CONTENT ══ */
-        .content{padding:26px;flex:1;}
+        .content{padding:26px;flex:1;min-width:0;max-width:100%;box-sizing:border-box;}
         .flash{display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:14px;margin-bottom:18px;font-size:13px;font-weight:600;border:1px solid transparent;}
         .flash.success{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
         .flash.error{background:#fff1f2;color:#be123c;border-color:#fecdd3;}
@@ -118,7 +119,7 @@
         .btn-secondary:hover{border-color:rgba(85,51,204,.35);color:var(--vt);background:#faf8ff;}
 
         /* ══ CARDS ══ */
-        .card{background:#fff;border:1.5px solid var(--border);border-radius:18px;box-shadow:0 2px 12px rgba(85,51,204,.04);}
+        .card{background:#fff;border:1.5px solid var(--border);border-radius:18px;box-shadow:0 2px 12px rgba(85,51,204,.04);min-width:0;max-width:100%;}
         .summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:22px;}
         .summary-card{padding:18px 16px;display:flex;align-items:center;gap:12px;}
         .summary-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
@@ -241,6 +242,90 @@
         </div>
     </div>
 
+    <div>
+        <div class="sb-section-title">Contabilidad</div>
+        <div class="sb-links">
+            <a href="{{ route('admin.contabilidad.general') }}" class="sb-link {{ ($currentModule ?? '') === 'contabilidad-general' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-calculator"></i></span>
+                <span>Contabilidad General</span>
+            </a>
+            <a href="{{ route('admin.contabilidad.datos') }}" class="sb-link {{ ($currentModule ?? '') === 'datos-contables' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                <span>Datos Contables</span>
+            </a>
+            <a href="{{ route('admin.contabilidad.planilla') }}" class="sb-link {{ ($currentModule ?? '') === 'planilla' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-users"></i></span>
+                <span>Planilla</span>
+            </a>
+            <a href="{{ route('admin.contabilidad.proveedores') }}" class="sb-link {{ ($currentModule ?? '') === 'proveedores' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-truck"></i></span>
+                <span>Proveedores</span>
+            </a>
+        </div>
+    </div>
+
+    <div>
+        <div class="sb-section-title">Gestion</div>
+        <div class="sb-links">
+            <a href="{{ route('admin.contabilidad.egresos-generales') }}" class="sb-link {{ ($currentModule ?? '') === 'egresos-generales' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                <span>Egresos Generales</span>
+            </a>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-clipboard-list"></i></span>
+                <span>Requerimientos General</span>
+            </span>
+            <a href="{{ route('admin.contabilidad.requerimientos-caja-chica') }}" class="sb-link {{ ($currentModule ?? '') === 'requerimientos-caja-chica' ? 'active' : '' }}">
+                <span class="sb-icon"><i class="fas fa-lock"></i></span>
+                <span>Requerimientos Caja Chica</span>
+            </a>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-mobile-screen"></i></span>
+                <span>Pago Clientes Virtuales</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-calendar-days"></i></span>
+                <span>Fechas de vencimiento</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-landmark"></i></span>
+                <span>Caja General</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-cash-register"></i></span>
+                <span>Caja chica</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-users"></i></span>
+                <span>Clientes Totales</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-compass-drafting"></i></span>
+                <span>Arquitectura</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-sitemap"></i></span>
+                <span>Gestion planos clientes</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-cube"></i></span>
+                <span>Subir plano 3D</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-user-plus"></i></span>
+                <span>Gestion de Leads</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-file-excel"></i></span>
+                <span>Excel Boletas</span>
+            </span>
+            <span class="sb-link disabled">
+                <span class="sb-icon"><i class="fas fa-handshake"></i></span>
+                <span>CRM</span>
+            </span>
+        </div>
+    </div>
+
     <div class="sb-footer">
         @auth
         <div class="sb-user">
@@ -262,7 +347,7 @@
 
 <div class="main">
     <header class="topbar">
-        <div class="topbar-title">@yield('topbar_title', 'Panel <span>Principal</span>')</div>
+        <div class="topbar-title">{!! $__env->yieldContent('topbar_title', 'Panel <span>Principal</span>') !!}</div>
         <div class="topbar-right">
             <div class="topbar-chip"><i class="fas fa-calendar-alt"></i> {{ now('America/Lima')->translatedFormat('D d M Y') }}</div>
             @auth

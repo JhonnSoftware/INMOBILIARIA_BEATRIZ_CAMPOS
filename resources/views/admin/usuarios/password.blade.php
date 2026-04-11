@@ -1,7 +1,7 @@
 @extends('layouts.admin-main', ['currentModule' => 'usuarios'])
 
 @section('title', 'Cambiar contraseña | BC Inmobiliaria')
-@section('topbar_title', 'Usuarios del <span>Sistema</span>')
+@section('topbar_title')Usuarios del <span>Sistema</span>@endsection
 @section('module_label', 'Usuarios / Contraseña')
 @section('page_title', 'Cambiar contraseña')
 @section('page_subtitle', 'Actualiza la contraseña de {{ $usuario->name }} utilizando el hash nativo de Laravel. La clave anterior no se muestra ni se almacena en texto plano.')

@@ -14,7 +14,15 @@
       "Bash(php -r \":*)",
       "Read(//c/xampp/htdocs/cetecop/**)",
       "Bash(grep -E \"\\\\.\\(php|blade\\\\.php\\)$\")",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(sed -i \"s|@section\\('topbar_title', 'Gestion de <span>Proveedores</span>'\\)|@section\\('topbar_title'\\)Gestion de <span>Proveedores<\\\\/span>@endsection|g\" resources/views/admin/contabilidad/proveedores/index.blade.php)",
+      "Bash(sed -i \"s|@section\\('topbar_title', 'Dashboard <span>Principal</span>'\\)|@section\\('topbar_title'\\)Dashboard <span>Principal<\\\\/span>@endsection|g\" resources/views/admin/dashboard.blade.php)",
+      "Bash(sed -i \"s|@section\\('topbar_title', 'Usuarios del <span>Sistema</span>'\\)|@section\\('topbar_title'\\)Usuarios del <span>Sistema<\\\\/span>@endsection|g\" resources/views/admin/usuarios/create.blade.php)",
+      "Bash(sed -i \"s|@section\\('topbar_title', 'Usuarios del <span>Sistema</span>'\\)|@section\\('topbar_title'\\)Usuarios del <span>Sistema<\\\\/span>@endsection|g\" resources/views/admin/usuarios/edit.blade.php)",
+      "Bash(sed -i \"s|@section\\('topbar_title', 'Usuarios del <span>Sistema</span>'\\)|@section\\('topbar_title'\\)Usuarios del <span>Sistema<\\\\/span>@endsection|g\" resources/views/admin/usuarios/index.blade.php)",
+      "Bash(composer show:*)",
+      "Bash(composer require:*)",
+      "Bash(php -r ':*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\user\\.claude\\projects\\c--xampp-htdocs-BC-ibmobiliaria",
